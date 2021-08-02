@@ -96,22 +96,23 @@ public class TrainSet {
     private static void load(String dataDirectory) {
         int total = 0;
         List<String> lines = read(dataDirectory);
-        for(String line : lines){
+
+        for (String line : lines) {
             total++;
             String[] strs = line.split(",");
-            String method_name = strs[0].substring(1, strs[0].length()-1);
-            Signature signature = new Signature(strs[1].substring(1, strs[1].length()-1));
+            String method_name = strs[0].substring(1, strs[0].length() - 1);
+            Signature signature = new Signature(strs[1].substring(1, strs[1].length() - 1));
 
-            if(data.containsKey(signature)) {
+            if (data.containsKey(signature)) {
                 Map<String, Integer> counter = data.get(signature);
-                if(counter.containsKey(method_name)) {
-                    counter.put(method_name, counter.get(method_name)+1);
+                if (counter.containsKey(method_name)) {
+                    counter.put(method_name, counter.get(method_name) + 1);
                     data.put(signature, counter);
-                }else {
+                } else {
                     counter.put(method_name, 1);
                     data.put(signature, counter);
                 }
-            }else {
+            } else {
                 Map<String, Integer> counter = new HashMap<>();
                 counter.put(method_name, 1);
                 data.put(signature, counter);
@@ -120,25 +121,25 @@ public class TrainSet {
         System.out.println(total + " train samples loaded.");
     }
 
-    private static List<String> read(String filePath){
+    private static List<String> read(String filePath) {
         List<String> list = new ArrayList<>();
-        try{
+        try {
             File file = new File(filePath);
-            if (file.isFile() && file.exists()){
+            if (file.isFile() && file.exists()) {
                 InputStreamReader reader = new InputStreamReader(new FileInputStream(file));
                 BufferedReader bufferedReader = new BufferedReader(reader);
                 String line;
 
-                while ((line = bufferedReader.readLine()) != null)
-                {
+                while ((line = bufferedReader.readLine()) != null) {
                     list.add(line);
                 }
                 bufferedReader.close();
                 reader.close();
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
         return list;
     }
 
