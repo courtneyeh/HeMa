@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.util.concurrent.Callable;
 
 public class Task implements Callable<Void> {
-    String code = null;
+    String code;
 
     public Task(Path path) {
         try {
