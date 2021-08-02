@@ -25,19 +25,18 @@ public class FileParser {
         final String methodPrefix = "SomeUnknownReturnType f() {";
         final String methodSuffix = "return noSuchReturnValue; }";
 
-        String originalContent = code;
-        String content = originalContent;
-        CompilationUnit parsed = null;
+        String content = code;
+        CompilationUnit parsed;
         try {
             parsed = JavaParser.parse(content);
         } catch (ParseProblemException e1) {
             // Wrap with a class and method
             try {
-                content = classPrefix + methodPrefix + originalContent + methodSuffix + classSuffix;
+                content = classPrefix + methodPrefix + code + methodSuffix + classSuffix;
                 parsed = JavaParser.parse(content);
             } catch (ParseProblemException e2) {
                 // Wrap with a class only
-                content = classPrefix + originalContent + classSuffix;
+                content = classPrefix + code + classSuffix;
                 parsed = JavaParser.parse(content);
             }
         }

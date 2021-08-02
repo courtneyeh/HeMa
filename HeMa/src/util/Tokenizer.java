@@ -7,7 +7,7 @@ public class Tokenizer {
     }
 
     public static String tokenize(String str) {
-        if (str.length() == 0 || str == null) {
+        if (str == null || str.length() == 0) {
             return "";
         }
         if (str.charAt(0) == '\'' && str.charAt(str.length() - 1) == '\'') {

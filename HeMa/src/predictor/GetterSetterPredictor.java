@@ -68,7 +68,6 @@ public class GetterSetterPredictor {
 
 
     private static String predictGetter(MethodDeclaration node) {
-
         if (node.getElementType() instanceof VoidType) {
             return null;
         }
@@ -111,6 +110,7 @@ public class GetterSetterPredictor {
         if (field == null) {
             return null;
         }
+
         return returnName;
     }
 
@@ -125,9 +125,11 @@ public class GetterSetterPredictor {
                 assignExprs.add(assignExpr);
             }
         }
+
         if (assignExprs.size() == 0) {
             return null;
         }
+
         if (assignExprs.size() > 1) {
             return null;
         }

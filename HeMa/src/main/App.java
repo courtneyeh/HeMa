@@ -8,18 +8,18 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class App {
     private static String evaluationDir = null;
     private static int numThreads = 32;
-    private static String dataDir = null;
 
     public static void main(String[] args) {
         evaluationDir = args[0];
         numThreads = Integer.parseInt(args[1]);
-        dataDir = args[2];
+        String dataDir = args[2];
 
         if (evaluationDir != null) {
             File root = new File(evaluationDir);
@@ -27,7 +27,7 @@ public class App {
                 TrainSet.initialize(dataDir);
 
                 File[] projs = root.listFiles();
-                for (File proj : projs) {
+                for (File proj : Objects.requireNonNull(projs)) {
                     evaluationDir = proj.getPath();
                     extractDir();
                 }

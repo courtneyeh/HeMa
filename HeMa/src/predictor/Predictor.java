@@ -5,7 +5,6 @@ import util.Counter;
 
 import java.util.List;
 
-
 public class Predictor {
     private final List<MethodDeclaration> nodes;
 
@@ -14,8 +13,7 @@ public class Predictor {
     }
 
     public void run() {
-        for (int i = 0; i < this.nodes.size(); i++) {
-            MethodDeclaration node = this.nodes.get(i);
+        for (MethodDeclaration node : this.nodes) {
             Counter.total++;
 
             if (GetterSetterPredictor.predict(node) > -1)
