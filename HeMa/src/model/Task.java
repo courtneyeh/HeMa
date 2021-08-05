@@ -1,6 +1,7 @@
-package main;
+package model;
 
 import com.github.javaparser.ParseException;
+import util.FileParser;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,5 +30,4 @@ public class Task implements Callable<Void> {
         }
         return null;
     }
-
 }

@@ -1,10 +1,9 @@
-package util;
+package model;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import main.FileParser;
-import predictor.Signature;
-import visitor.FunctionVisitor;
+import util.FileParser;
+import util.FunctionVisitor;
 
 import java.io.*;
 import java.nio.file.Files;

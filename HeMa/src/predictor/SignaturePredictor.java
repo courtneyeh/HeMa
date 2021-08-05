@@ -1,9 +1,10 @@
 package predictor;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import model.Signature;
 import util.Counter;
 import util.Tokenizer;
-import util.TrainSet;
+import model.TrainSet;
 
 import java.util.Map;
 import java.util.Map.Entry;

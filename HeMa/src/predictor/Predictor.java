@@ -1,24 +1,24 @@
 package predictor;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import predictor.DelegationPredictor;
+import predictor.GetterPredictor;
+import predictor.SetterPredictor;
+import predictor.SignaturePredictor;
 import util.Counter;
 
 import java.util.List;
 
 public class Predictor {
-    private final List<MethodDeclaration> nodes;
-
-    public Predictor(List<MethodDeclaration> nodes) {
-        this.nodes = nodes;
-    }
-
-    public void run() {
-        for (MethodDeclaration node : this.nodes) {
+    public static void predict(List<MethodDeclaration> nodes) {
+        for (MethodDeclaration node : nodes) {
             Counter.total++;
 
-            if (GetterSetterPredictor.predict(node) > -1)
+            if (GetterPredictor.predict(node) > -1)
                 continue;
-            if (ShortMPredictor.predict(node) > -1)
+            if (SetterPredictor.predict(node) > -1)
+                continue;
+            if (DelegationPredictor.predict(node) > -1)
                 continue;
             SignaturePredictor.predict(node);
         }

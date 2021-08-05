@@ -1,7 +1,6 @@
-package main;
-
+import model.Task;
 import util.Counter;
-import util.TrainSet;
+import model.TrainSet;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +11,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class App {
+public class Main {
     private static String evaluationDir = null;
     private static int numThreads = 32;
 

@@ -1,4 +1,4 @@
-package predictor;
+package model;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -37,7 +37,6 @@ public class Signature {
             removeComment(child);
         }
     }
-
 
     public Signature(String signature) {
         String[] strs = signature.split(";");

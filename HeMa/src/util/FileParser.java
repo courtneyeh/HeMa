@@ -1,4 +1,4 @@
-package main;
+package util;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
@@ -6,13 +6,12 @@ import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import predictor.Predictor;
-import visitor.FunctionVisitor;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class FileParser {
-    private String code;
+    private final String code;
     private CompilationUnit m_CompilationUnit;
 
     public FileParser(String code) {
@@ -55,7 +54,6 @@ public class FileParser {
         functionVisitor.visit(m_CompilationUnit, null);
         ArrayList<MethodDeclaration> nodes = functionVisitor.getMethodDeclarations();
 
-        Predictor predictor = new Predictor(nodes);
-        predictor.run();
+        Predictor.predict(nodes);
     }
 }

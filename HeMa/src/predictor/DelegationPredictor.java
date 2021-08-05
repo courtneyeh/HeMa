@@ -11,7 +11,7 @@ import util.Tokenizer;
 
 import java.util.List;
 
-public class ShortMPredictor {
+public class DelegationPredictor {
 
     public static int predict(MethodDeclaration node) {
         List<Statement> stmts = node.getBody().getStmts();
