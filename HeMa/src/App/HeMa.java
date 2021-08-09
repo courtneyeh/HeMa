@@ -1,6 +1,8 @@
+package App;
+
 import model.Task;
 import model.TrainSet;
-import predictor.Predictor;
+import predictor.PredictionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 public class HeMa {
     private final int numThreads;
+    public static PredictionManager predictionManager = new PredictionManager();
 
     HeMa(String dataDir, int numThreads) {
         TrainSet.initialize(dataDir);
@@ -28,7 +31,7 @@ public class HeMa {
             extractDir(f.getPath());
         }
 
-        Predictor.printResults();
+        PredictionManager.printResults();
     }
 
     private void extractDir(String dir) {

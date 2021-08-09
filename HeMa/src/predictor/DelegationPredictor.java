@@ -10,39 +10,37 @@ import util.Tokenizer;
 
 import java.util.List;
 
-public class DelegationPredictor {
+public class DelegationPredictor implements IPredictor {
     public static int predicted = 0;
     public static int correct = 0;
 
-    public static int predict(MethodDeclaration node) {
+    @Override
+    public boolean predict(MethodDeclaration node) {
+        // Check there is a single statement
         List<Statement> stmts = node.getBody().getStmts();
-        if (stmts.size() != 1) {
-            return -1;
-        }
+        if (stmts.size() != 1) return false;
 
+        // Check the single statement is an expression or return statement
         Statement stmt = stmts.get(0);
-
         Expression expr;
         if (stmt instanceof ExpressionStmt) {
             expr = ((ExpressionStmt) stmt).getExpression();
         } else if (stmt instanceof ReturnStmt) {
             expr = ((ReturnStmt) stmt).getExpr();
         } else {
-            return -1;
+            return false;
         }
 
-        if (expr instanceof MethodCallExpr) {
-            predicted++;
-            String reference = Tokenizer.tokenize(node.getName()).toLowerCase();
+        // Check single method is a method call
+        if (!(expr instanceof MethodCallExpr)) return false;
 
-            MethodCallExpr method = (MethodCallExpr) expr;
-            String prediction = Tokenizer.tokenize(method.getName()).toLowerCase();
+        predicted++;
+        String reference = Tokenizer.tokenize(node.getName()).toLowerCase();
 
-            int precision = reference.equals(prediction) ? 1 : 0;
-            correct += precision;
-            return precision;
-        }
+        MethodCallExpr method = (MethodCallExpr) expr;
+        String prediction = Tokenizer.tokenize(method.getName()).toLowerCase();
 
-        return -1;
+        correct += reference.equals(prediction) ? 1 : 0;
+        return true;
     }
 }

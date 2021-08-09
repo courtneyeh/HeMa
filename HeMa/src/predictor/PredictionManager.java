@@ -2,21 +2,24 @@ package predictor;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 
-public class Predictor {
+public class PredictionManager {
     public static int methodCount = 0;
     public static int predictedMethods = 0;
     public static float correctMethods = 0;
 
-    public static void predict(MethodDeclaration method) {
+    /* Predictors */
+    GetterPredictor getterPredictor = new GetterPredictor();
+    SetterPredictor setterPredictor = new SetterPredictor();
+    DelegationPredictor delegationPredictor = new DelegationPredictor();
+    SignaturePredictor signaturePredictor = new SignaturePredictor();
+
+    public void predict(MethodDeclaration method) {
         methodCount++;
 
-        if (GetterPredictor.predict(method) > -1)
-            return;
-        if (SetterPredictor.predict(method) > -1)
-            return;
-        if (DelegationPredictor.predict(method) > -1)
-            return;
-        SignaturePredictor.predict(method);
+        if (getterPredictor.predict(method)) return;
+        if (setterPredictor.predict(method)) return;
+        if (delegationPredictor.predict(method)) return;
+        signaturePredictor.predict(method);
     }
 
     public static void printResults() {

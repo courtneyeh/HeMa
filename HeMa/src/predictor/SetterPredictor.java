@@ -1,108 +1,77 @@
 package predictor;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
-import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import util.Tokenizer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetterPredictor {
+public class SetterPredictor extends GetterSetterPredictor {
     public static int predicted = 0;
     public static int correct = 0;
 
-    public static int predict(MethodDeclaration node) {
-        if (node.getParameters().size() > 0) {
-            String prediction = predictSetter(node);
-            if (prediction != null) {
-                predicted++;
-                String reference = Tokenizer.tokenize(node.getName()).toLowerCase();
-                prediction = Tokenizer.tokenize(prediction).toLowerCase();
-
-                if (prediction.startsWith("is ")) {
-                    prediction = prediction.replaceFirst("is ", "set ");
-                } else if (prediction.startsWith("m ")) {
-                    prediction = prediction.replaceFirst("m ", "set ");
-                } else {
-                    prediction = "set " + prediction;
-                }
-
-                int precision = reference.equals(prediction) ? 1 : 0;
-                correct += precision;
-                return precision;
-            }
-        }
-
-        return -1;
-    }
-
-    private static String predictSetter(MethodDeclaration node) {
+    @Override
+    public boolean predict(MethodDeclaration method) {
         // Check there is a parameter
-        if (node.getParameters().size() == 0) {
-            return null;
-        }
+        if (method.getParameters().size() == 0) return false;
 
+        // Check there is a single assignment
         List<AssignExpr> assignExprs = new ArrayList<>();
-        for (AssignExpr assignExpr : node.getBody().getNodesByType(AssignExpr.class)) {
-            if (assignExpr.getParentNodeOfType(MethodDeclaration.class).equals(node)) {
-                assignExprs.add(assignExpr);
-            }
+        for (AssignExpr assignExpr : method.getBody().getNodesByType(AssignExpr.class)) {
+            if (assignExpr.getParentNodeOfType(MethodDeclaration.class).equals(method)) assignExprs.add(assignExpr);
         }
 
-        if (assignExprs.size() == 0) {
-            return null;
-        }
+        if (assignExprs.size() != 1) return false;
 
-        if (assignExprs.size() > 1) {
-            return null;
-        }
-
+        // Get the prediction
         AssignExpr assignExpr = assignExprs.get(0);
         Expression targetExpr = assignExpr.getTarget();
         Expression valueExpr = assignExpr.getValue();
 
-        String rightName = "";
+        String prediction = getPrediction(targetExpr);
+        if (prediction == null) return false;
+
+        // Check the value is an assigned method parameter
+        String valueName;
         if (valueExpr instanceof NameExpr) {
-            rightName = ((NameExpr) valueExpr).getName();
+            valueName = ((NameExpr) valueExpr).getName();
         } else {
-            return null;
+            return false;
         }
 
         List<String> parameters = new ArrayList<>();
-        for (Parameter parameter : node.getParameters()) {
+        for (Parameter parameter : method.getParameters()) {
             parameters.add(parameter.getId().getName());
         }
-        if (!parameters.contains(rightName)) {
-            return null;
-        }
 
-        String prediction = "";
-        if (targetExpr instanceof FieldAccessExpr) {
-            prediction = ((FieldAccessExpr) targetExpr).getField();
-        } else if (targetExpr instanceof NameExpr) {
-            prediction = ((NameExpr) targetExpr).getName();
+        if (!parameters.contains(valueName)) return false;
+
+        // Check assignment is assigned to field declared within the class
+        if (!returnedDeclaredClass(method, prediction)) return false;
+
+        predicted++;
+        String reference = Tokenizer.tokenize(method.getName()).toLowerCase();
+        prediction = Tokenizer.tokenize(prediction).toLowerCase();
+
+        if (prediction.startsWith("is ")) {
+            prediction = prediction.replaceFirst("is ", "set ");
+        } else if (prediction.startsWith("m ")) {
+            prediction = prediction.replaceFirst("m ", "set ");
         } else {
-            return null;
+            prediction = "set " + prediction;
         }
 
-        FieldDeclaration field = null;
-        ClassOrInterfaceDeclaration parent = node.getParentNodeOfType(ClassOrInterfaceDeclaration.class);
-        if (parent != null) {
-            List<FieldDeclaration> fieldDeclarations = parent.getFields();
-            for (FieldDeclaration fieldDeclaration : fieldDeclarations) {
-                if (fieldDeclaration.getVariables().get(0).getId().getName().equals(prediction)) {
-                    field = fieldDeclaration;
-                    break;
-                }
-            }
-        }
+        correct += reference.equals(prediction) ? 1 : 0;
+        return true;
+    }
 
-        return field != null ? prediction : null;
+    @Override
+    boolean validDeclaration(MethodDeclaration methodDeclaration, FieldDeclaration fieldDeclaration, String prediction) {
+        return fieldDeclaration.getVariables().get(0).getId().getName().equals(prediction);
     }
 }

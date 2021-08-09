@@ -1,8 +1,8 @@
 package model;
 
+import App.HeMa;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import predictor.Predictor;
 import util.FileParser;
 
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class Task implements Callable<Void> {
     public Void call() throws Exception {
         try {
             ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
-            for (MethodDeclaration m : nodes) Predictor.predict(m);
+            for (MethodDeclaration m : nodes) HeMa.predictionManager.predict(m);
 
         } catch (ParseException | IOException e) {
             e.printStackTrace();
