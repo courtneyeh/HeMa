@@ -42,6 +42,7 @@ public class SetterPredictor {
     }
 
     private static String predictSetter(MethodDeclaration node) {
+        // Check there is a parameter
         if (node.getParameters().size() == 0) {
             return null;
         }
@@ -80,11 +81,11 @@ public class SetterPredictor {
             return null;
         }
 
-        String leftName = "";
+        String prediction = "";
         if (targetExpr instanceof FieldAccessExpr) {
-            leftName = ((FieldAccessExpr) targetExpr).getField();
+            prediction = ((FieldAccessExpr) targetExpr).getField();
         } else if (targetExpr instanceof NameExpr) {
-            leftName = ((NameExpr) targetExpr).getName();
+            prediction = ((NameExpr) targetExpr).getName();
         } else {
             return null;
         }
@@ -94,17 +95,13 @@ public class SetterPredictor {
         if (parent != null) {
             List<FieldDeclaration> fieldDeclarations = parent.getFields();
             for (FieldDeclaration fieldDeclaration : fieldDeclarations) {
-                if (fieldDeclaration.getVariables().get(0).getId().getName().equals(leftName)) {
+                if (fieldDeclaration.getVariables().get(0).getId().getName().equals(prediction)) {
                     field = fieldDeclaration;
                     break;
                 }
             }
         }
 
-        if (field == null) {
-            return null;
-        }
-
-        return leftName;
+        return field != null ? prediction : null;
     }
 }

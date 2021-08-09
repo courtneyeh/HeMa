@@ -48,22 +48,18 @@ public class GetterPredictor {
         }
 
         List<ReturnStmt> returnStmts = node.getNodesByType(ReturnStmt.class);
-        if (returnStmts.size() == 0) {
+        if (returnStmts.size() != 1) {
             return null;
         }
 
-        if (returnStmts.size() > 1) {
-            return null;
-        }
-
-        ReturnStmt returnStmt = returnStmts.get(returnStmts.size() - 1);
+        ReturnStmt returnStmt = returnStmts.get(0);
         Expression expr = returnStmt.getExpr();
 
-        String returnName = "";
+        String prediction = "";
         if (expr instanceof FieldAccessExpr) {
-            returnName = ((FieldAccessExpr) expr).getField();
+            prediction = ((FieldAccessExpr) expr).getField();
         } else if (expr instanceof NameExpr) {
-            returnName = ((NameExpr) expr).getName();
+            prediction = ((NameExpr) expr).getName();
         } else {
             return null;
         }
@@ -73,19 +69,14 @@ public class GetterPredictor {
         if (parent != null) {
             List<FieldDeclaration> fieldDeclarations = parent.getFields();
             for (FieldDeclaration fieldDeclaration : fieldDeclarations) {
-                if (fieldDeclaration.getVariables().get(0).getId().getName().equals(returnName)) {
-                    if (fieldDeclaration.getElementType().toString().equals(node.getElementType().toString())) {
-                        field = fieldDeclaration;
-                        break;
-                    }
+                if (fieldDeclaration.getVariables().get(0).getId().getName().equals(prediction)
+                        && fieldDeclaration.getElementType().toString().equals(node.getElementType().toString())) {
+                    field = fieldDeclaration;
+                    break;
                 }
             }
         }
 
-        if (field == null) {
-            return null;
-        }
-
-        return returnName;
+        return field != null ? prediction : null;
     }
 }
