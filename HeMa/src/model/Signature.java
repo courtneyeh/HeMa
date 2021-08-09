@@ -31,13 +31,6 @@ public class Signature {
         }
     }
 
-    private void removeComment(Node node) {
-        node.setComment(null);
-        for (Node child : node.getChildrenNodes()) {
-            removeComment(child);
-        }
-    }
-
     public Signature(String signature) {
         String[] strs = signature.split(";");
         this.return_type = strs[0];
@@ -49,6 +42,13 @@ public class Signature {
         this.paramTokens = new String[param_num];
         for (int i = 0; i < param_num; i++) {
             this.paramTokens[i] = strs[i * 2 + 2];
+        }
+    }
+
+    private void removeComment(Node node) {
+        node.setComment(null);
+        for (Node child : node.getChildrenNodes()) {
+            removeComment(child);
         }
     }
 

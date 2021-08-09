@@ -8,19 +8,20 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
-import util.Counter;
 import util.Tokenizer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SetterPredictor {
+    public static int predicted = 0;
+    public static int correct = 0;
 
     public static int predict(MethodDeclaration node) {
         if (node.getParameters().size() > 0) {
             String prediction = predictSetter(node);
             if (prediction != null) {
-                Counter.gPredicted++;
+                predicted++;
                 String reference = Tokenizer.tokenize(node.getName()).toLowerCase();
                 prediction = Tokenizer.tokenize(prediction).toLowerCase();
 
@@ -33,7 +34,7 @@ public class SetterPredictor {
                 }
 
                 int precision = reference.equals(prediction) ? 1 : 0;
-                Counter.gCorrect += precision;
+                correct += precision;
                 return precision;
             }
         }

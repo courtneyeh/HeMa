@@ -9,18 +9,19 @@ import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.VoidType;
-import util.Counter;
 import util.Tokenizer;
 
 import java.util.List;
 
 public class GetterPredictor {
+    public static int predicted = 0;
+    public static int correct = 0;
 
     public static int predict(MethodDeclaration node) {
         if (!(node.getElementType() instanceof VoidType)) {
             String prediction = predictGetter(node);
             if (prediction != null) {
-                Counter.gPredicted++;
+                predicted++;
                 String reference = Tokenizer.tokenize(node.getName()).toLowerCase();
 
                 prediction = Tokenizer.tokenize(prediction).toLowerCase();
@@ -35,7 +36,7 @@ public class GetterPredictor {
                 }
 
                 int precision = reference.equals(prediction) ? 1 : 0;
-                Counter.gCorrect += precision;
+                correct += precision;
                 return precision;
             }
         }

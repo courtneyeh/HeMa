@@ -1,26 +1,34 @@
 package predictor;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
-import predictor.DelegationPredictor;
-import predictor.GetterPredictor;
-import predictor.SetterPredictor;
-import predictor.SignaturePredictor;
-import util.Counter;
-
-import java.util.List;
 
 public class Predictor {
-    public static void predict(List<MethodDeclaration> nodes) {
-        for (MethodDeclaration node : nodes) {
-            Counter.total++;
+    public static int methodCount = 0;
+    public static int predictedMethods = 0;
+    public static float correctMethods = 0;
 
-            if (GetterPredictor.predict(node) > -1)
-                continue;
-            if (SetterPredictor.predict(node) > -1)
-                continue;
-            if (DelegationPredictor.predict(node) > -1)
-                continue;
-            SignaturePredictor.predict(node);
-        }
+    public static void predict(MethodDeclaration method) {
+        methodCount++;
+
+        if (GetterPredictor.predict(method) > -1)
+            return;
+        if (SetterPredictor.predict(method) > -1)
+            return;
+        if (DelegationPredictor.predict(method) > -1)
+            return;
+        SignaturePredictor.predict(method);
+    }
+
+    public static void printResults() {
+        predictedMethods = GetterPredictor.predicted + SetterPredictor.predicted + DelegationPredictor.predicted
+                + SignaturePredictor.predicted;
+        correctMethods = GetterPredictor.correct + SetterPredictor.correct + DelegationPredictor.correct
+                + SignaturePredictor.correct;
+
+        System.out.println("total = " + methodCount);
+        System.out.println("predicted = " + predictedMethods);
+        System.out.println("correct = " + correctMethods);
+        System.out.println("precision = " + correctMethods * 1.0 / predictedMethods);
+        System.out.println("recall = " + correctMethods * 1.0 / methodCount);
     }
 }

@@ -6,12 +6,13 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import util.Counter;
 import util.Tokenizer;
 
 import java.util.List;
 
 public class DelegationPredictor {
+    public static int predicted = 0;
+    public static int correct = 0;
 
     public static int predict(MethodDeclaration node) {
         List<Statement> stmts = node.getBody().getStmts();
@@ -31,14 +32,14 @@ public class DelegationPredictor {
         }
 
         if (expr instanceof MethodCallExpr) {
-            Counter.mPredicted++;
+            predicted++;
             String reference = Tokenizer.tokenize(node.getName()).toLowerCase();
 
             MethodCallExpr method = (MethodCallExpr) expr;
             String prediction = Tokenizer.tokenize(method.getName()).toLowerCase();
 
             int precision = reference.equals(prediction) ? 1 : 0;
-            Counter.mCorrect += precision;
+            correct += precision;
             return precision;
         }
 

@@ -11,11 +11,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class FileParser {
-    private final String code;
-    private CompilationUnit m_CompilationUnit;
 
-    public FileParser(String code) {
-        this.code = code;
+    public static ArrayList<MethodDeclaration> extractFeatures(String code) throws ParseException, IOException {
+        CompilationUnit m_CompilationUnit = parseFileWithRetries(code);
+        FunctionVisitor functionVisitor = new FunctionVisitor();
+
+        functionVisitor.visit(m_CompilationUnit, null);
+        return functionVisitor.getMethodDeclarations();
     }
 
     public static CompilationUnit parseFileWithRetries(String code) throws IOException {
@@ -41,19 +43,5 @@ public class FileParser {
         }
 
         return parsed;
-    }
-
-    public CompilationUnit getParsedFile() {
-        return m_CompilationUnit;
-    }
-
-    public void extractFeatures() throws ParseException, IOException {
-        m_CompilationUnit = parseFileWithRetries(code);
-        FunctionVisitor functionVisitor = new FunctionVisitor();
-
-        functionVisitor.visit(m_CompilationUnit, null);
-        ArrayList<MethodDeclaration> nodes = functionVisitor.getMethodDeclarations();
-
-        Predictor.predict(nodes);
     }
 }
