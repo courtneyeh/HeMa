@@ -6,7 +6,6 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NameExpr;
-import util.Recorder;
 import util.Tokenizer;
 
 import java.util.ArrayList;
@@ -19,9 +18,9 @@ public class SetterPredictor extends GetterSetterPredictor {
     }
 
     @Override
-    public boolean predict(MethodDeclaration method) {
+    public String predict(MethodDeclaration method) {
         // Check there is a parameter
-        if (method.getParameters().size() == 0) return false;
+        if (method.getParameters().size() == 0) return null;
 
         // Check there is a single assignment
         List<AssignExpr> assignExprs = new ArrayList<>();
@@ -29,7 +28,7 @@ public class SetterPredictor extends GetterSetterPredictor {
             if (assignExpr.getParentNodeOfType(MethodDeclaration.class).equals(method)) assignExprs.add(assignExpr);
         }
 
-        if (assignExprs.size() != 1) return false;
+        if (assignExprs.size() != 1) return null;
 
         // Get the prediction
         AssignExpr assignExpr = assignExprs.get(0);
@@ -37,14 +36,14 @@ public class SetterPredictor extends GetterSetterPredictor {
         Expression valueExpr = assignExpr.getValue();
 
         String prediction = getPrediction(targetExpr);
-        if (prediction == null) return false;
+        if (prediction == null) return null;
 
         // Check the value is an assigned method parameter
         String valueName;
         if (valueExpr instanceof NameExpr) {
             valueName = ((NameExpr) valueExpr).getName();
         } else {
-            return false;
+            return null;
         }
 
         List<String> parameters = new ArrayList<>();
@@ -52,13 +51,11 @@ public class SetterPredictor extends GetterSetterPredictor {
             parameters.add(parameter.getId().getName());
         }
 
-        if (!parameters.contains(valueName)) return false;
+        if (!parameters.contains(valueName)) return null;
 
         // Check assignment is assigned to field declared within the class
-        if (!returnedDeclaredClass(method, prediction)) return false;
+        if (!returnedDeclaredClass(method, prediction)) return null;
 
-        predicted++;
-        String reference = Tokenizer.tokenize(method.getName()).toLowerCase();
         prediction = Tokenizer.tokenize(prediction).toLowerCase();
 
         if (prediction.startsWith("is ")) {
@@ -69,10 +66,7 @@ public class SetterPredictor extends GetterSetterPredictor {
             prediction = "set " + prediction;
         }
 
-        correct += reference.equals(prediction) ? 1 : 0;
-
-        Recorder.save(reference, prediction, TYPE);
-        return true;
+        return prediction;
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.VoidType;
-import util.Recorder;
 import util.Tokenizer;
 
 import java.util.List;
@@ -18,26 +17,24 @@ public class GetterPredictor extends GetterSetterPredictor {
     }
 
     @Override
-    public boolean predict(MethodDeclaration method) {
+    public String predict(MethodDeclaration method) {
         // Check method does not return void
-        if (method.getElementType() instanceof VoidType) return false;
+        if (method.getElementType() instanceof VoidType) return null;
 
         // Check method returns a single value
         List<ReturnStmt> returnStmts = method.getNodesByType(ReturnStmt.class);
-        if (returnStmts.size() != 1) return false;
+        if (returnStmts.size() != 1) return null;
 
         // Check the returned value is declared in the enclosing class
         ReturnStmt returnStmt = returnStmts.get(0);
         Expression expr = returnStmt.getExpr();
 
         String prediction = getPrediction(expr);
-        if (prediction == null) return false;
+        if (prediction == null) return null;
 
         // Check assignment is assigned to field declared within the class
-        if (!returnedDeclaredClass(method, prediction)) return false;
+        if (!returnedDeclaredClass(method, prediction)) return null;
 
-        predicted++;
-        String reference = Tokenizer.tokenize(method.getName()).toLowerCase();
         prediction = Tokenizer.tokenize(prediction).toLowerCase();
 
         if (method.getElementType() instanceof PrimitiveType &&
@@ -50,10 +47,7 @@ public class GetterPredictor extends GetterSetterPredictor {
             prediction = "get " + prediction;
         }
 
-        correct += reference.equals(prediction) ? 1 : 0;
-
-        Recorder.save(reference, prediction, TYPE);
-        return true;
+        return prediction;
     }
 
     @Override

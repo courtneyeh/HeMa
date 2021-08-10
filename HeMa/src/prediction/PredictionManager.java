@@ -18,10 +18,10 @@ public class PredictionManager {
     public void predict(MethodDeclaration method) {
         methodCount++;
 
-        if (getterPredictor.predict(method)) return;
-        if (setterPredictor.predict(method)) return;
-        if (delegationPredictor.predict(method)) return;
-        if (signaturePredictor.predict(method)) return;
+        if (getterPredictor.run(method)) return;
+        if (setterPredictor.run(method)) return;
+        if (delegationPredictor.run(method)) return;
+        if (signaturePredictor.run(method)) return;
 
         // If no predictions were made, record in output CSV
         Recorder.save(Tokenizer.tokenize(method.getName()).toLowerCase(), "-", "-");

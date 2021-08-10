@@ -3,7 +3,6 @@ package prediction;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import model.Signature;
 import model.TrainSet;
-import util.Recorder;
 import util.Tokenizer;
 
 import java.util.Map;
@@ -16,7 +15,7 @@ public class SignaturePredictor extends Predictor {
     }
 
     @Override
-    public boolean predict(MethodDeclaration node) {
+    public String predict(MethodDeclaration node) {
         String method_name = node.getName();
         Signature signature = new Signature(node);
 
@@ -32,16 +31,11 @@ public class SignaturePredictor extends Predictor {
                 }
             }
             if (max > 0) {
-                predicted++;
-                String reference = Tokenizer.tokenize(method_name).toLowerCase();
                 prediction = Tokenizer.tokenize(prediction).toLowerCase();
-                correct += reference.equals(prediction) ? 1 : 0;
-
-                Recorder.save(reference, prediction, TYPE);
-                return true;
+                return prediction;
             }
         }
 
-        return false;
+        return null;
     }
 }

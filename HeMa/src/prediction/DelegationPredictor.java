@@ -6,7 +6,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import util.Recorder;
 import util.Tokenizer;
 
 import java.util.List;
@@ -18,10 +17,10 @@ public class DelegationPredictor extends Predictor {
     }
 
     @Override
-    public boolean predict(MethodDeclaration node) {
+    public String predict(MethodDeclaration node) {
         // Check there is a single statement
         List<Statement> stmts = node.getBody().getStmts();
-        if (stmts.size() != 1) return false;
+        if (stmts.size() != 1) return null;
 
         // Check the single statement is an expression or return statement
         Statement stmt = stmts.get(0);
@@ -31,21 +30,13 @@ public class DelegationPredictor extends Predictor {
         } else if (stmt instanceof ReturnStmt) {
             expr = ((ReturnStmt) stmt).getExpr();
         } else {
-            return false;
+            return null;
         }
 
         // Check single method is a method call
-        if (!(expr instanceof MethodCallExpr)) return false;
-
-        predicted++;
-        String reference = Tokenizer.tokenize(node.getName()).toLowerCase();
+        if (!(expr instanceof MethodCallExpr)) return null;
 
         MethodCallExpr method = (MethodCallExpr) expr;
-        String prediction = Tokenizer.tokenize(method.getName()).toLowerCase();
-
-        correct += reference.equals(prediction) ? 1 : 0;
-
-        Recorder.save(reference, prediction, TYPE);
-        return true;
+        return Tokenizer.tokenize(method.getName()).toLowerCase();
     }
 }
