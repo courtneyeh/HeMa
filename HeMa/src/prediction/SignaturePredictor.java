@@ -1,4 +1,4 @@
-package predictor;
+package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import model.Signature;
@@ -8,9 +8,7 @@ import util.Tokenizer;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SignaturePredictor implements IPredictor {
-    public static int predicted = 0;
-    public static int correct = 0;
+public class SignaturePredictor extends Predictor {
 
     @Override
     public boolean predict(MethodDeclaration node) {

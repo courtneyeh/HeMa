@@ -2,7 +2,7 @@ package App;
 
 import model.Task;
 import model.TrainSet;
-import predictor.PredictionManager;
+import prediction.PredictionManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ public class HeMa {
             extractDir(f.getPath());
         }
 
-        PredictionManager.printResults();
+        predictionManager.printResults();
     }
 
     private void extractDir(String dir) {

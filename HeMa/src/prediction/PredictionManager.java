@@ -1,4 +1,4 @@
-package predictor;
+package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 
@@ -22,11 +22,11 @@ public class PredictionManager {
         signaturePredictor.predict(method);
     }
 
-    public static void printResults() {
-        predictedMethods = GetterPredictor.predicted + SetterPredictor.predicted + DelegationPredictor.predicted
-                + SignaturePredictor.predicted;
-        correctMethods = GetterPredictor.correct + SetterPredictor.correct + DelegationPredictor.correct
-                + SignaturePredictor.correct;
+    public void printResults() {
+        predictedMethods = getterPredictor.predicted + setterPredictor.predicted + delegationPredictor.predicted
+                + signaturePredictor.predicted;
+        correctMethods = getterPredictor.correct + setterPredictor.correct + delegationPredictor.correct
+                + signaturePredictor.correct;
 
         System.out.println("total = " + methodCount);
         System.out.println("predicted = " + predictedMethods);

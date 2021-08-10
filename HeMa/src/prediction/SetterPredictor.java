@@ -1,4 +1,4 @@
-package predictor;
+package prediction;
 
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SetterPredictor extends GetterSetterPredictor {
-    public static int predicted = 0;
-    public static int correct = 0;
 
     @Override
     public boolean predict(MethodDeclaration method) {

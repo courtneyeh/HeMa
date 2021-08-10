@@ -1,4 +1,4 @@
-package predictor;
+package prediction;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
@@ -9,7 +9,8 @@ import com.github.javaparser.ast.expr.NameExpr;
 
 import java.util.List;
 
-public abstract class GetterSetterPredictor implements IPredictor {
+public abstract class GetterSetterPredictor extends Predictor {
+
     String getPrediction(Expression expression) {
         if (expression instanceof FieldAccessExpr) {
             return ((FieldAccessExpr) expression).getField();

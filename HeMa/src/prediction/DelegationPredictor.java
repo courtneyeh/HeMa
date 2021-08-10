@@ -1,4 +1,4 @@
-package predictor;
+package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
@@ -10,9 +10,7 @@ import util.Tokenizer;
 
 import java.util.List;
 
-public class DelegationPredictor implements IPredictor {
-    public static int predicted = 0;
-    public static int correct = 0;
+public class DelegationPredictor extends Predictor {
 
     @Override
     public boolean predict(MethodDeclaration node) {
