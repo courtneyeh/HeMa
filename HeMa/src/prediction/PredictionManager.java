@@ -1,6 +1,8 @@
 package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import util.Recorder;
+import util.Tokenizer;
 
 public class PredictionManager {
     public static int methodCount = 0;
@@ -19,7 +21,10 @@ public class PredictionManager {
         if (getterPredictor.predict(method)) return;
         if (setterPredictor.predict(method)) return;
         if (delegationPredictor.predict(method)) return;
-        signaturePredictor.predict(method);
+        if (signaturePredictor.predict(method)) return;
+
+        // If no predictions were made, record in output CSV
+        Recorder.save(Tokenizer.tokenize(method.getName()).toLowerCase(), "-", "-");
     }
 
     public void printResults() {
