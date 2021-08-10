@@ -6,6 +6,12 @@ public abstract class Predictor {
     int predicted = 0;
     int correct = 0;
 
+    final String TYPE;
+
+    protected Predictor(String type) {
+        TYPE = type;
+    }
+
     /**
      * Predicts the name of the method
      * @param method declaration

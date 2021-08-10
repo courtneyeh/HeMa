@@ -3,6 +3,7 @@ package App;
 import model.Task;
 import model.TrainSet;
 import prediction.PredictionManager;
+import util.Recorder;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class HeMa {
     public static PredictionManager predictionManager = new PredictionManager();
 
     HeMa(String dataDir, int numThreads) {
+        Recorder.initialize();
         TrainSet.initialize(dataDir);
         this.numThreads = numThreads;
     }

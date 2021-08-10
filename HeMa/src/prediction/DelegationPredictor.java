@@ -6,11 +6,16 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import util.Recorder;
 import util.Tokenizer;
 
 import java.util.List;
 
 public class DelegationPredictor extends Predictor {
+
+    public DelegationPredictor() {
+        super("DELEGATION");
+    }
 
     @Override
     public boolean predict(MethodDeclaration node) {
@@ -39,6 +44,8 @@ public class DelegationPredictor extends Predictor {
         String prediction = Tokenizer.tokenize(method.getName()).toLowerCase();
 
         correct += reference.equals(prediction) ? 1 : 0;
+
+        Recorder.save(reference, prediction, TYPE);
         return true;
     }
 }

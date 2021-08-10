@@ -3,12 +3,17 @@ package prediction;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import model.Signature;
 import model.TrainSet;
+import util.Recorder;
 import util.Tokenizer;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class SignaturePredictor extends Predictor {
+
+    public SignaturePredictor() {
+        super("SIGNATURE");
+    }
 
     @Override
     public boolean predict(MethodDeclaration node) {
@@ -31,6 +36,8 @@ public class SignaturePredictor extends Predictor {
                 String reference = Tokenizer.tokenize(method_name).toLowerCase();
                 prediction = Tokenizer.tokenize(prediction).toLowerCase();
                 correct += reference.equals(prediction) ? 1 : 0;
+
+                Recorder.save(reference, prediction, TYPE);
                 return true;
             }
         }

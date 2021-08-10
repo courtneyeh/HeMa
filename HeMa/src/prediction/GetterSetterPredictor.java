@@ -11,6 +11,10 @@ import java.util.List;
 
 public abstract class GetterSetterPredictor extends Predictor {
 
+    public GetterSetterPredictor(String type) {
+        super(type);
+    }
+
     String getPrediction(Expression expression) {
         if (expression instanceof FieldAccessExpr) {
             return ((FieldAccessExpr) expression).getField();

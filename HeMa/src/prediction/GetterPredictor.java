@@ -6,11 +6,16 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.VoidType;
+import util.Recorder;
 import util.Tokenizer;
 
 import java.util.List;
 
 public class GetterPredictor extends GetterSetterPredictor {
+
+    GetterPredictor() {
+        super("GETTER");
+    }
 
     @Override
     public boolean predict(MethodDeclaration method) {
@@ -46,6 +51,8 @@ public class GetterPredictor extends GetterSetterPredictor {
         }
 
         correct += reference.equals(prediction) ? 1 : 0;
+
+        Recorder.save(reference, prediction, TYPE);
         return true;
     }
 

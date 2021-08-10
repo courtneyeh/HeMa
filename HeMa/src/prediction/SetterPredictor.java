@@ -6,12 +6,17 @@ import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NameExpr;
+import util.Recorder;
 import util.Tokenizer;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SetterPredictor extends GetterSetterPredictor {
+
+    SetterPredictor() {
+        super("SETTER");
+    }
 
     @Override
     public boolean predict(MethodDeclaration method) {
@@ -65,6 +70,8 @@ public class SetterPredictor extends GetterSetterPredictor {
         }
 
         correct += reference.equals(prediction) ? 1 : 0;
+
+        Recorder.save(reference, prediction, TYPE);
         return true;
     }
 
