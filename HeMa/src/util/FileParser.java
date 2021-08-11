@@ -1,22 +1,22 @@
-package main;
+package util;
 
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ParseProblemException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import predictor.Predictor;
-import visitor.FunctionVisitor;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class FileParser {
-    private String code;
-    private CompilationUnit m_CompilationUnit;
 
-    public FileParser(String code) {
-        this.code = code;
+    public static ArrayList<MethodDeclaration> extractFeatures(String code) throws ParseException, IOException {
+        CompilationUnit m_CompilationUnit = parseFileWithRetries(code);
+        FunctionVisitor functionVisitor = new FunctionVisitor();
+
+        functionVisitor.visit(m_CompilationUnit, null);
+        return functionVisitor.getMethodDeclarations();
     }
 
     public static CompilationUnit parseFileWithRetries(String code) throws IOException {
@@ -42,20 +42,5 @@ public class FileParser {
         }
 
         return parsed;
-    }
-
-    public CompilationUnit getParsedFile() {
-        return m_CompilationUnit;
-    }
-
-    public void extractFeatures() throws ParseException, IOException {
-        m_CompilationUnit = parseFileWithRetries(code);
-        FunctionVisitor functionVisitor = new FunctionVisitor();
-
-        functionVisitor.visit(m_CompilationUnit, null);
-        ArrayList<MethodDeclaration> nodes = functionVisitor.getMethodDeclarations();
-
-        Predictor predictor = new Predictor(nodes);
-        predictor.run();
     }
 }

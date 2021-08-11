@@ -1,7 +1,9 @@
-package main;
+package App;
 
-import util.Counter;
-import util.TrainSet;
+import model.Task;
+import model.TrainSet;
+import prediction.PredictionManager;
+import util.Recorder;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,37 +14,34 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class App {
-    private static String evaluationDir = null;
-    private static int numThreads = 32;
+public class HeMa {
+    private final int numThreads;
+    public static PredictionManager predictionManager = new PredictionManager();
 
-    public static void main(String[] args) {
-        evaluationDir = args[0];
-        numThreads = Integer.parseInt(args[1]);
-        String dataDir = args[2];
-
-        if (evaluationDir != null) {
-            File root = new File(evaluationDir);
-            if (root.exists() && root.isDirectory()) {
-                TrainSet.initialize(dataDir);
-
-                File[] projs = root.listFiles();
-                for (File proj : Objects.requireNonNull(projs)) {
-                    evaluationDir = proj.getPath();
-                    extractDir();
-                }
-
-                Counter.print();
-            }
-        }
+    HeMa(String dataDir, int numThreads) {
+        Recorder.initialize();
+        TrainSet.initialize(dataDir);
+        this.numThreads = numThreads;
     }
 
-    private static void extractDir() {
+    public void start(String evaluationDir) {
+        File root = new File(evaluationDir);
+        if (!root.exists() || !root.isDirectory()) return;
+
+        File[] files = root.listFiles();
+        for (File f : Objects.requireNonNull(files)) {
+            extractDir(f.getPath());
+        }
+
+        predictionManager.printResults();
+    }
+
+    private void extractDir(String dir) {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(numThreads);
         LinkedList<Task> tasks = new LinkedList<>();
 
         try {
-            Files.walk(Paths.get(evaluationDir)).filter(Files::isRegularFile)
+            Files.walk(Paths.get(dir)).filter(Files::isRegularFile)
                     .filter(p -> p.toString().toLowerCase().endsWith(".java")).forEach(f -> {
                 Task task = new Task(f);
                 tasks.add(task);

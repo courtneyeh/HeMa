@@ -1,19 +1,25 @@
-package predictor;
+package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
-import util.Counter;
+import model.Signature;
+import model.TrainSet;
 import util.Tokenizer;
-import util.TrainSet;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class SignaturePredictor {
+public class SignaturePredictor extends Predictor {
 
-    public static int predict(MethodDeclaration node) {
+    public SignaturePredictor() {
+        super("SIGNATURE");
+    }
+
+    @Override
+    public String predict(MethodDeclaration node) {
         String method_name = node.getName();
         Signature signature = new Signature(node);
 
+        // Predict based on signature of training set
         if (TrainSet.getData().containsKey(signature)) {
             Map<String, Integer> counter = TrainSet.getData().get(signature);
             int max = 0;
@@ -25,18 +31,11 @@ public class SignaturePredictor {
                 }
             }
             if (max > 0) {
-                Counter.sPredicted++;
-
-                String reference = Tokenizer.tokenize(method_name).toLowerCase();
-
                 prediction = Tokenizer.tokenize(prediction).toLowerCase();
-
-                int precision = reference.equals(prediction) ? 1 : 0;
-                Counter.sCorrect += precision;
-                return precision;
+                return prediction;
             }
         }
 
-        return -1;
+        return null;
     }
 }

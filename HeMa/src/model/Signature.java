@@ -1,4 +1,4 @@
-package predictor;
+package model;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -31,14 +31,6 @@ public class Signature {
         }
     }
 
-    private void removeComment(Node node) {
-        node.setComment(null);
-        for (Node child : node.getChildrenNodes()) {
-            removeComment(child);
-        }
-    }
-
-
     public Signature(String signature) {
         String[] strs = signature.split(";");
         this.return_type = strs[0];
@@ -53,14 +45,20 @@ public class Signature {
         }
     }
 
+    private void removeComment(Node node) {
+        node.setComment(null);
+        for (Node child : node.getChildrenNodes()) {
+            removeComment(child);
+        }
+    }
+
     @Override
     public String toString() {
-        String signature = return_type;
+        StringBuilder signature = new StringBuilder(return_type);
         for (int i = 0; i < paramTypes.length; i++) {
-            signature += ";" + paramTypes[i];
-            signature += ";" + paramTokens[i];
+            signature.append(";").append(paramTypes[i]).append(";").append(paramTokens[i]);
         }
-        return signature;
+        return signature.toString();
     }
 
 
@@ -102,24 +100,22 @@ public class Signature {
         } else return return_type.equals(other.return_type);
     }
 
-    private boolean equals(String[] a, String[] a2) {
-        if (a == a2)
+    private boolean equals(String[] a1, String[] a2) {
+        if (a1 == a2)
             return true;
-        if (a == null || a2 == null)
+        if (a1 == null || a2 == null)
             return false;
 
-        int length = a.length;
+        int length = a1.length;
         if (a2.length != length)
             return false;
 
-        for (int i = 0; i < length; i++) {
+        for (String s : a1) {
             int length2 = a2.length;
             for (int j = 0; j < length2; j++) {
-                if (a[i].equals(a2[j])) {
+                if (s.equals(a2[j])) {
                     String[] tmp = new String[length2 - 1];
-                    for (int k = 0; k < j; k++) {
-                        tmp[k] = a2[k];
-                    }
+                    System.arraycopy(a2, 0, tmp, 0, j);
                     for (int k = j + 1; k < length2; k++) {
                         tmp[k - 1] = a2[k];
                     }

@@ -1,10 +1,9 @@
-package util;
+package model;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import main.FileParser;
-import predictor.Signature;
-import visitor.FunctionVisitor;
+import util.FileParser;
+import util.FunctionVisitor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -45,7 +44,7 @@ public class TrainSet {
             }
         }
 
-        try (PrintWriter writer = new PrintWriter(new File("trainset.csv"))) {
+        try (PrintWriter writer = new PrintWriter(new File("trainSet.csv"))) {
             writer.write(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,10 +81,7 @@ public class TrainSet {
 
                 data.put(signature, signatureMap);
 
-                sb.append(methodName);
-                sb.append(',');
-                sb.append(signature);
-                sb.append('\n');
+                sb.append(methodName).append(',').append(signature).append('\n');
             }
 
         } catch (IOException e) {
@@ -103,20 +99,10 @@ public class TrainSet {
             String method_name = strs[0].substring(1, strs[0].length() - 1);
             Signature signature = new Signature(strs[1].substring(1, strs[1].length() - 1));
 
-            if (data.containsKey(signature)) {
-                Map<String, Integer> counter = data.get(signature);
-                if (counter.containsKey(method_name)) {
-                    counter.put(method_name, counter.get(method_name) + 1);
-                    data.put(signature, counter);
-                } else {
-                    counter.put(method_name, 1);
-                    data.put(signature, counter);
-                }
-            } else {
-                Map<String, Integer> counter = new HashMap<>();
-                counter.put(method_name, 1);
-                data.put(signature, counter);
-            }
+            Map<String, Integer> counter = data.getOrDefault(signature, new HashMap<>());
+            int count = counter.getOrDefault(method_name, 0) + 1;
+            counter.put(method_name, count);
+            data.put(signature, counter);
         }
         System.out.println(total + " train samples loaded.");
     }

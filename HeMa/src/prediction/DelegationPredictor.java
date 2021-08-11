@@ -1,4 +1,4 @@
-package predictor;
+package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
@@ -6,42 +6,37 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
-import util.Counter;
 import util.Tokenizer;
 
 import java.util.List;
 
-public class ShortMPredictor {
+public class DelegationPredictor extends Predictor {
 
-    public static int predict(MethodDeclaration node) {
+    public DelegationPredictor() {
+        super("DELEGATION");
+    }
+
+    @Override
+    public String predict(MethodDeclaration node) {
+        // Check there is a single statement
         List<Statement> stmts = node.getBody().getStmts();
-        if (stmts.size() != 1) {
-            return -1;
-        }
+        if (stmts.size() != 1) return null;
 
+        // Check the single statement is an expression or return statement
         Statement stmt = stmts.get(0);
-
         Expression expr;
         if (stmt instanceof ExpressionStmt) {
             expr = ((ExpressionStmt) stmt).getExpression();
         } else if (stmt instanceof ReturnStmt) {
             expr = ((ReturnStmt) stmt).getExpr();
         } else {
-            return -1;
+            return null;
         }
 
-        if (expr instanceof MethodCallExpr) {
-            Counter.mPredicted++;
-            String reference = Tokenizer.tokenize(node.getName()).toLowerCase();
+        // Check single method is a method call
+        if (!(expr instanceof MethodCallExpr)) return null;
 
-            MethodCallExpr method = (MethodCallExpr) expr;
-            String prediction = Tokenizer.tokenize(method.getName()).toLowerCase();
-
-            int precision = reference.equals(prediction) ? 1 : 0;
-            Counter.mCorrect += precision;
-            return precision;
-        }
-
-        return -1;
+        MethodCallExpr method = (MethodCallExpr) expr;
+        return Tokenizer.tokenize(method.getName()).toLowerCase();
     }
 }

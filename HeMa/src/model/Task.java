@@ -1,10 +1,14 @@
-package main;
+package model;
 
+import App.HeMa;
 import com.github.javaparser.ParseException;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import util.FileParser;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 public class Task implements Callable<Void> {
@@ -22,12 +26,12 @@ public class Task implements Callable<Void> {
     @Override
     public Void call() throws Exception {
         try {
-            FileParser featureExtractor = new FileParser(code);
-            featureExtractor.extractFeatures();
+            ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
+            for (MethodDeclaration m : nodes) HeMa.predictionManager.predict(m);
+
         } catch (ParseException | IOException e) {
             e.printStackTrace();
         }
         return null;
     }
-
 }

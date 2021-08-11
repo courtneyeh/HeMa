@@ -1,4 +1,4 @@
-package visitor;
+package util;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.AnnotationExpr;
