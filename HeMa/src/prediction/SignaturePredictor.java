@@ -16,7 +16,6 @@ public class SignaturePredictor extends Predictor {
 
     @Override
     public String predict(MethodDeclaration node) {
-        String method_name = node.getName();
         Signature signature = new Signature(node);
 
         // Predict based on signature of training set

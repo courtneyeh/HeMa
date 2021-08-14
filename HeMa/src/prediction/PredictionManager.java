@@ -24,7 +24,7 @@ public class PredictionManager {
         if (signaturePredictor.run(method)) return;
 
         // If no predictions were made, record in output CSV
-        Recorder.save(Tokenizer.tokenize(method.getName()).toLowerCase(), "-", "-");
+        Recorder.save(Tokenizer.tokenize(method.getNameAsString()).toLowerCase(), "-", "-");
     }
 
     public void printResults() {
