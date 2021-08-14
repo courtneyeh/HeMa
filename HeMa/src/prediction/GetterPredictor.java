@@ -19,7 +19,7 @@ public class GetterPredictor extends GetterSetterPredictor {
     @Override
     public String predict(MethodDeclaration method) {
         // Check method does not return void
-        if (method.getElementType() instanceof VoidType) return null;
+        if (method.getType() instanceof VoidType) return null;
 
         // Check method returns a single value
         List<ReturnStmt> returnStmts = method.getNodesByType(ReturnStmt.class);
@@ -27,7 +27,8 @@ public class GetterPredictor extends GetterSetterPredictor {
 
         // Check the returned value is declared in the enclosing class
         ReturnStmt returnStmt = returnStmts.get(0);
-        Expression expr = returnStmt.getExpr();
+        if (!returnStmt.getExpression().isPresent()) return null;
+        Expression expr = returnStmt.getExpression().get();
 
         String prediction = getPrediction(expr);
         if (prediction == null) return null;
@@ -37,8 +38,8 @@ public class GetterPredictor extends GetterSetterPredictor {
 
         prediction = Tokenizer.tokenize(prediction).toLowerCase();
 
-        if (method.getElementType() instanceof PrimitiveType &&
-                ((PrimitiveType) method.getElementType()).getType().name().equals("Boolean")) {
+        if (method.getType() instanceof PrimitiveType &&
+                ((PrimitiveType) method.getType()).getType().name().toUpperCase().equals("BOOLEAN")) {
             if (!prediction.startsWith("is "))
                 prediction = "is " + prediction;
         } else if (prediction.startsWith("m ")) {
@@ -52,7 +53,7 @@ public class GetterPredictor extends GetterSetterPredictor {
 
     @Override
     boolean validDeclaration(MethodDeclaration methodDeclaration, FieldDeclaration fieldDeclaration, String prediction) {
-        return fieldDeclaration.getVariables().get(0).getId().getName().equals(prediction)
-                && fieldDeclaration.getElementType().toString().equals(methodDeclaration.getElementType().toString());
+        return fieldDeclaration.getVariables().get(0).getNameAsString().equals(prediction)
+                && fieldDeclaration.getElementType().toString().equals(methodDeclaration.getType().toString());
     }
 }

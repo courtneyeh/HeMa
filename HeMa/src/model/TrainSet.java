@@ -1,9 +1,8 @@
 package model;
 
-import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import util.FileParser;
-import util.FunctionVisitor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -63,19 +62,14 @@ public class TrainSet {
         }
 
         try {
-            // Get method declarations from code
-            CompilationUnit cu = FileParser.parseFileWithRetries(code);
-            FunctionVisitor functionVisitor = new FunctionVisitor();
-
-            functionVisitor.visit(cu, null);
-            ArrayList<MethodDeclaration> nodes = functionVisitor.getMethodDeclarations();
+            ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
 
             // Update data with new methods
             for (MethodDeclaration m : nodes) {
                 Signature signature = new Signature(m);
                 Map<String, Integer> signatureMap = data.getOrDefault(signature, new HashMap<>());
 
-                String methodName = m.getName();
+                String methodName = m.getNameAsString();
                 int times = signatureMap.getOrDefault(methodName, 0) + 1;
                 signatureMap.put(methodName, times);
 
@@ -84,7 +78,7 @@ public class TrainSet {
                 sb.append(methodName).append(',').append(signature).append('\n');
             }
 
-        } catch (IOException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }

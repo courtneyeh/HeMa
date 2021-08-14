@@ -17,7 +17,7 @@ public abstract class Predictor {
         String prediction = predict(method);
         if (prediction == null) return false;
 
-        String reference = Tokenizer.tokenize(method.getName()).toLowerCase();
+        String reference = Tokenizer.tokenize(method.getNameAsString()).toLowerCase();
 
         // Updates counts
         predicted++;

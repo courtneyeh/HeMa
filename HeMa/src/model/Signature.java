@@ -14,7 +14,7 @@ public class Signature {
     private final int param_num;
 
     public Signature(MethodDeclaration node) {
-        Type<?> returnType = node.getType();
+        Type returnType = node.getType();
         removeComment(returnType);
         this.return_type = returnType.toString();
 
@@ -24,10 +24,10 @@ public class Signature {
         this.paramTokens = new String[this.param_num];
 
         for (int i = 0; i < parameters.size(); i++) {
-            Type<?> paramType = parameters.get(i).getType();
+            Type paramType = parameters.get(i).getType();
             removeComment(paramType);
             this.paramTypes[i] = paramType.toString();
-            this.paramTokens[i] = parameters.get(i).getId().getName();
+            this.paramTokens[i] = parameters.get(i).getNameAsString();
         }
     }
 
@@ -47,7 +47,7 @@ public class Signature {
 
     private void removeComment(Node node) {
         node.setComment(null);
-        for (Node child : node.getChildrenNodes()) {
+        for (Node child : node.getChildNodes()) {
             removeComment(child);
         }
     }

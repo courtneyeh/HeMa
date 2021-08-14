@@ -3,12 +3,14 @@ package prediction;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import util.Tokenizer;
 
 import java.util.List;
+import java.util.Optional;
 
 public class DelegationPredictor extends Predictor {
 
@@ -19,7 +21,9 @@ public class DelegationPredictor extends Predictor {
     @Override
     public String predict(MethodDeclaration node) {
         // Check there is a single statement
-        List<Statement> stmts = node.getBody().getStmts();
+        if (!node.getBody().isPresent()) return null;
+
+        List<Statement> stmts = node.getBody().get().getStatements();
         if (stmts.size() != 1) return null;
 
         // Check the single statement is an expression or return statement
@@ -28,7 +32,8 @@ public class DelegationPredictor extends Predictor {
         if (stmt instanceof ExpressionStmt) {
             expr = ((ExpressionStmt) stmt).getExpression();
         } else if (stmt instanceof ReturnStmt) {
-            expr = ((ReturnStmt) stmt).getExpr();
+            if (!((ReturnStmt) stmt).getExpression().isPresent()) return null;
+            expr = ((ReturnStmt) stmt).getExpression().get();
         } else {
             return null;
         }
@@ -37,6 +42,6 @@ public class DelegationPredictor extends Predictor {
         if (!(expr instanceof MethodCallExpr)) return null;
 
         MethodCallExpr method = (MethodCallExpr) expr;
-        return Tokenizer.tokenize(method.getName()).toLowerCase();
+        return Tokenizer.tokenize(method.getNameAsString()).toLowerCase();
     }
 }

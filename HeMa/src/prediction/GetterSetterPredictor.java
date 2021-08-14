@@ -1,5 +1,6 @@
 package prediction;
 
+import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -8,6 +9,7 @@ import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 
 import java.util.List;
+import java.util.Optional;
 
 public abstract class GetterSetterPredictor extends Predictor {
 
@@ -16,10 +18,10 @@ public abstract class GetterSetterPredictor extends Predictor {
     }
 
     String getPrediction(Expression expression) {
-        if (expression instanceof FieldAccessExpr) {
-            return ((FieldAccessExpr) expression).getField();
-        } else if (expression instanceof NameExpr) {
-            return ((NameExpr) expression).getName();
+        if (expression.isFieldAccessExpr()) {
+            return expression.asFieldAccessExpr().getNameAsString();
+        } else if (expression.isNameExpr()) {
+            return expression.asNameExpr().getNameAsString();
         }
 
         return null;
@@ -28,14 +30,18 @@ public abstract class GetterSetterPredictor extends Predictor {
     Boolean returnedDeclaredClass(MethodDeclaration method, String prediction) {
         // Check returned value declared in enclosing class
         FieldDeclaration field = null;
-        ClassOrInterfaceDeclaration parent = method.getParentNodeOfType(ClassOrInterfaceDeclaration.class);
-        if (parent != null) {
-            List<FieldDeclaration> fieldDeclarations = parent.getFields();
-            for (FieldDeclaration fieldDeclaration : fieldDeclarations) {
-                if (validDeclaration(method, fieldDeclaration, prediction)) {
-                    field = fieldDeclaration;
-                    break;
-                }
+
+        if (!method.getParentNode().isPresent()) return null;
+        Node parentNode = method.getParentNode().get();
+
+        if (!(parentNode instanceof ClassOrInterfaceDeclaration)) return null;
+
+        ClassOrInterfaceDeclaration parent = (ClassOrInterfaceDeclaration) parentNode;
+        List<FieldDeclaration> fieldDeclarations = parent.getFields();
+        for (FieldDeclaration fieldDeclaration : fieldDeclarations) {
+            if (validDeclaration(method, fieldDeclaration, prediction)) {
+                field = fieldDeclaration;
+                break;
             }
         }
 

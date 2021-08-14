@@ -23,10 +23,10 @@ public class SetterPredictor extends GetterSetterPredictor {
         if (method.getParameters().size() == 0) return null;
 
         // Check there is a single assignment
-        List<AssignExpr> assignExprs = new ArrayList<>();
-        for (AssignExpr assignExpr : method.getBody().getNodesByType(AssignExpr.class)) {
-            if (assignExpr.getParentNodeOfType(MethodDeclaration.class).equals(method)) assignExprs.add(assignExpr);
-        }
+
+        if (!method.getBody().isPresent()) return null;
+
+        List<AssignExpr> assignExprs = new ArrayList<>(method.getBody().get().getNodesByType(AssignExpr.class));
 
         if (assignExprs.size() != 1) return null;
 
@@ -40,15 +40,15 @@ public class SetterPredictor extends GetterSetterPredictor {
 
         // Check the value is an assigned method parameter
         String valueName;
-        if (valueExpr instanceof NameExpr) {
-            valueName = ((NameExpr) valueExpr).getName();
+        if (valueExpr.isNameExpr()) {
+            valueName = valueExpr.asNameExpr().getNameAsString();
         } else {
             return null;
         }
 
         List<String> parameters = new ArrayList<>();
         for (Parameter parameter : method.getParameters()) {
-            parameters.add(parameter.getId().getName());
+            parameters.add(parameter.getNameAsString());
         }
 
         if (!parameters.contains(valueName)) return null;
@@ -71,6 +71,6 @@ public class SetterPredictor extends GetterSetterPredictor {
 
     @Override
     boolean validDeclaration(MethodDeclaration methodDeclaration, FieldDeclaration fieldDeclaration, String prediction) {
-        return fieldDeclaration.getVariables().get(0).getId().getName().equals(prediction);
+        return fieldDeclaration.getVariables().get(0).getNameAsString().equals(prediction);
     }
 }
