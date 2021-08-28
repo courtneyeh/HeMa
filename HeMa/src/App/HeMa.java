@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -25,6 +26,8 @@ public class HeMa {
     }
 
     public void start(String evaluationDir) {
+
+        System.out.println("Starting HeMa... " + new Timestamp(System.currentTimeMillis()));
         File root = new File(evaluationDir);
         if (!root.exists() || !root.isDirectory()) return;
 
@@ -33,6 +36,7 @@ public class HeMa {
             extractDir(f.getPath());
         }
 
+        System.out.println("Finished HeMa, " + new Timestamp(System.currentTimeMillis()));
         predictionManager.printResults();
     }
 

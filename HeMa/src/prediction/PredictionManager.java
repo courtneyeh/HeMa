@@ -33,6 +33,7 @@ public class PredictionManager {
         correctMethods = getterPredictor.correct + setterPredictor.correct + delegationPredictor.correct
                 + signaturePredictor.correct;
 
+        System.out.println("\n---------- Results ----------");
         System.out.println("total = " + methodCount);
         System.out.println("predicted = " + predictedMethods);
         System.out.println("correct = " + correctMethods);
