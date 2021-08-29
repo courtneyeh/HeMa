@@ -1,6 +1,7 @@
 package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import model.TokenizedName;
 import util.Recorder;
 import util.Tokenizer;
 
@@ -14,17 +15,18 @@ public abstract class Predictor {
     }
 
     boolean run(MethodDeclaration method) {
-        String prediction = predict(method);
-        if (prediction == null) return false;
+        String predictionString = predict(method);
+        if (predictionString == null) return false;
 
-        String reference = Tokenizer.tokenize(method.getNameAsString()).toLowerCase();
+        TokenizedName prediction = new TokenizedName(predictionString);
+        TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
 
         // Updates counts
         predicted++;
-        correct += reference.equals(prediction) ? 1 : 0;
+        correct += reference.toString().equals(prediction.toString()) ? 1 : 0;
 
         // Records prediction in CSV
-        Recorder.save(reference, prediction, TYPE);
+        Recorder.save(reference.toString(), prediction.toString(), TYPE);
 
         return true;
     }
