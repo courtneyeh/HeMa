@@ -8,7 +8,10 @@ import util.Tokenizer;
 public class PredictionManager {
     public static int methodCount = 0;
     public static int predictedMethods = 0;
-    public static float correctMethods = 0;
+
+    public static double truePositive = 0;
+    public static double falsePositive = 0;
+    public static double falseNegative = 0;
 
     /* Predictors */
     GetterPredictor getterPredictor = new GetterPredictor();
@@ -26,20 +29,26 @@ public class PredictionManager {
 
         // If no predictions were made, record in output CSV
         TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
+        falseNegative += reference.tokens.size();
         Recorder.save(reference.toString(), "-", "-");
     }
 
     public void printResults() {
         predictedMethods = getterPredictor.predicted + setterPredictor.predicted + delegationPredictor.predicted
                 + signaturePredictor.predicted;
-        correctMethods = getterPredictor.correct + setterPredictor.correct + delegationPredictor.correct
-                + signaturePredictor.correct;
+
+        double precision = 0, recall = 0, f1 = 0;
+
+        // Calculate precision, recall and f1 scores, checking for a zero division error
+        if (truePositive + falsePositive != 0) precision = truePositive / (truePositive + falsePositive);
+        if (truePositive + falseNegative != 0) recall = truePositive / (truePositive + falseNegative);
+        if (precision + recall != 0) f1 = 2 * precision * recall / (precision + recall);
 
         System.out.println("\n---------- Results ----------");
         System.out.println("total = " + methodCount);
         System.out.println("predicted = " + predictedMethods);
-        System.out.println("correct = " + correctMethods);
-        System.out.println("precision = " + correctMethods * 1.0 / predictedMethods);
-        System.out.println("recall = " + correctMethods * 1.0 / methodCount);
+        System.out.println("precision = " + precision);
+        System.out.println("recall = " + recall);
+        System.out.println("F1 = " + f1);
     }
 }

@@ -1,26 +1,44 @@
 package model;
 
-import util.Tokenizer;
+import prediction.PredictionManager;
 
-import java.util.HashMap;
-import java.util.List;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class TokenizedName {
-    String methodName;
-    HashMap<String, Integer> tokenPositions;
+    public String methodName;
+    public HashSet<String> tokens;
 
     public TokenizedName(String str) {
         str = str.toLowerCase();
 
-        tokenPositions = new HashMap<>();
+        tokens = new HashSet<>();
 
-        String[] tokens = str.split(" ");
-
-        for (int i = 0; i < tokens.length; i++) {
-            tokenPositions.put(tokens[i], i);
-        }
+        String[] tokensStrings = str.split(" ");
+        tokens.addAll(Arrays.asList(tokensStrings));
 
         methodName = str.replaceAll(" ", "|");
+    }
+
+    public void score(TokenizedName reference) {
+        int tp = 0;
+        int fp = 0;
+        int fn = 0;
+
+        HashSet<String> refTokens = reference.tokens;
+
+        for (String predToken : tokens) {
+            if (refTokens.contains(predToken)) tp++;
+            else fp++;
+        }
+
+        for (String refToken : refTokens) {
+            if (!tokens.contains(refToken)) fn++;
+        }
+
+        PredictionManager.truePositive += tp;
+        PredictionManager.falsePositive += fp;
+        PredictionManager.falseNegative += fn;
     }
 
     @Override

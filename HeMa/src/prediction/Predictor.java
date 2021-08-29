@@ -8,7 +8,6 @@ import util.Tokenizer;
 public abstract class Predictor {
     final String TYPE;
     int predicted = 0;
-    int correct = 0;
 
     protected Predictor(String type) {
         TYPE = type;
@@ -22,8 +21,8 @@ public abstract class Predictor {
         TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
 
         // Updates counts
+        prediction.score(reference);
         predicted++;
-        correct += reference.toString().equals(prediction.toString()) ? 1 : 0;
 
         // Records prediction in CSV
         Recorder.save(reference.toString(), prediction.toString(), TYPE);
