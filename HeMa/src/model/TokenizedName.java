@@ -20,7 +20,7 @@ public class TokenizedName {
         methodName = str.replaceAll(" ", "|");
     }
 
-    public void score(TokenizedName reference) {
+    public Score score(TokenizedName reference) {
         int tp = 0;
         int fp = 0;
         int fn = 0;
@@ -39,6 +39,8 @@ public class TokenizedName {
         PredictionManager.truePositive += tp;
         PredictionManager.falsePositive += fp;
         PredictionManager.falseNegative += fn;
+
+        return new Score(tp, fp, fn);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import model.Score;
 import model.TokenizedName;
 import util.Recorder;
 import util.Tokenizer;
@@ -21,11 +22,11 @@ public abstract class Predictor {
         TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
 
         // Updates counts
-        prediction.score(reference);
+        Score score = prediction.score(reference);
         predicted++;
 
         // Records prediction in CSV
-        Recorder.save(reference.toString(), prediction.toString(), TYPE);
+        Recorder.save(reference.toString(), prediction.toString(), TYPE, score);
 
         return true;
     }

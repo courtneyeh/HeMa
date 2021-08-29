@@ -1,6 +1,7 @@
 package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import model.Score;
 import model.TokenizedName;
 import util.Recorder;
 import util.Tokenizer;
@@ -29,8 +30,11 @@ public class PredictionManager {
 
         // If no predictions were made, record in output CSV
         TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
-        falseNegative += reference.tokens.size();
-        Recorder.save(reference.toString(), "-", "-");
+        int fn = reference.tokens.size();
+        falseNegative += fn;
+
+        Score score = new Score(0, 0, fn);
+        Recorder.save(reference.toString(), "-", "-", score);
     }
 
     public void printResults() {
