@@ -1,6 +1,7 @@
 package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import model.TokenizedName;
 import util.Recorder;
 import util.Tokenizer;
 
@@ -24,7 +25,8 @@ public class PredictionManager {
         if (signaturePredictor.run(method)) return;
 
         // If no predictions were made, record in output CSV
-        Recorder.save(Tokenizer.tokenize(method.getNameAsString()).toLowerCase(), "-", "-");
+        TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
+        Recorder.save(reference.toString(), "-", "-");
     }
 
     public void printResults() {
