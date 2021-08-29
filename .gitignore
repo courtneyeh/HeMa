@@ -5,3 +5,6 @@
 # Ignored Files
 **/*.iml
 **/*.xml
+
+# Output Prediction Files
+HeMa_predictions**
