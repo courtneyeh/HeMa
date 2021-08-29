@@ -78,7 +78,7 @@ public class TrainSet {
 
                 data.put(signature, signatureMap);
 
-                sb.append(methodName).append(',').append(signature).append('\n');
+                sb.append('"').append(methodName).append('"').append(',').append('"').append(signature).append('"').append('\n');
             }
 
         } catch (IOException | ParseException e) {
