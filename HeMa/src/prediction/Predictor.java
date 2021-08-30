@@ -1,30 +1,36 @@
 package prediction;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import model.Score;
+import model.TokenizedName;
 import util.Recorder;
 import util.Tokenizer;
+import util.score.OriginalScore;
+import util.score.UpdatedScore;
 
 public abstract class Predictor {
     final String TYPE;
-    int predicted = 0;
-    int correct = 0;
 
     protected Predictor(String type) {
         TYPE = type;
     }
 
     boolean run(MethodDeclaration method) {
-        String prediction = predict(method);
-        if (prediction == null) return false;
+        String predictionString = predict(method);
+        if (predictionString == null) return false;
 
-        String reference = Tokenizer.tokenize(method.getNameAsString()).toLowerCase();
+        String referenceString = Tokenizer.tokenize(method.getNameAsString());
 
-        // Updates counts
-        predicted++;
-        correct += reference.equals(prediction) ? 1 : 0;
+        TokenizedName prediction = new TokenizedName(predictionString);
+        TokenizedName reference = new TokenizedName(referenceString);
+
+        // Updates scores
+        Score score = UpdatedScore.updateScore(reference, prediction);
+        OriginalScore.updateScore(referenceString.toLowerCase(), predictionString);
+        PredictionManager.predictedMethods++;
 
         // Records prediction in CSV
-        Recorder.save(reference, prediction, TYPE);
+        Recorder.save(reference.toString(), prediction.toString(), TYPE, score);
 
         return true;
     }

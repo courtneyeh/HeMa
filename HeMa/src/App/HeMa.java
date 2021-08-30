@@ -4,11 +4,14 @@ import model.Task;
 import model.TrainSet;
 import prediction.PredictionManager;
 import util.Recorder;
+import util.score.OriginalScore;
+import util.score.UpdatedScore;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -25,6 +28,8 @@ public class HeMa {
     }
 
     public void start(String evaluationDir) {
+
+        System.out.println("Starting HeMa... " + new Timestamp(System.currentTimeMillis()));
         File root = new File(evaluationDir);
         if (!root.exists() || !root.isDirectory()) return;
 
@@ -33,7 +38,17 @@ public class HeMa {
             extractDir(f.getPath());
         }
 
-        predictionManager.printResults();
+        System.out.println("Finished HeMa, " + new Timestamp(System.currentTimeMillis()));
+
+        printResults();
+    }
+
+    private void printResults() {
+        System.out.println("\n---------- Results ----------");
+        System.out.println("total = " + PredictionManager.methodCount);
+        System.out.println("predicted = " + PredictionManager.predictedMethods);
+        OriginalScore.printResults();
+        UpdatedScore.printResults();
     }
 
     private void extractDir(String dir) {

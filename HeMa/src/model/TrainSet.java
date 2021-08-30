@@ -8,6 +8,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,6 +18,7 @@ public class TrainSet {
     private static final Map<Signature, Map<String, Integer>> data = new HashMap<>();
 
     public static void initialize(String dataLocation) {
+        System.out.println("Initializing TrainSet... " + new Timestamp(System.currentTimeMillis()));
         if (dataLocation == null) {
             throw new RuntimeException("Provide a directory for training, or a train set CSV");
         }
@@ -26,6 +28,7 @@ public class TrainSet {
         } else {
             create(dataLocation);
         }
+        System.out.println("Finished initializing TrainSet, " + new Timestamp(System.currentTimeMillis()));
     }
 
     private static void create(String dataDirectory) {
