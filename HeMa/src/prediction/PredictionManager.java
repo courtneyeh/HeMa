@@ -5,7 +5,7 @@ import model.Score;
 import model.TokenizedName;
 import util.Recorder;
 import util.Tokenizer;
-import util.UpdatedScore;
+import util.score.UpdatedScore;
 
 public class PredictionManager {
     public static int methodCount = 0;

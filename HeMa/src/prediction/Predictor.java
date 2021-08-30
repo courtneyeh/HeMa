@@ -5,7 +5,8 @@ import model.Score;
 import model.TokenizedName;
 import util.Recorder;
 import util.Tokenizer;
-import util.UpdatedScore;
+import util.score.OriginalScore;
+import util.score.UpdatedScore;
 
 public abstract class Predictor {
     final String TYPE;
@@ -18,11 +19,14 @@ public abstract class Predictor {
         String predictionString = predict(method);
         if (predictionString == null) return false;
 
+        String referenceString = Tokenizer.tokenize(method.getNameAsString());
+
         TokenizedName prediction = new TokenizedName(predictionString);
-        TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
+        TokenizedName reference = new TokenizedName(referenceString);
 
         // Updates scores
         Score score = UpdatedScore.updateScore(reference, prediction);
+        OriginalScore.updateScore(referenceString.toLowerCase(), predictionString);
         PredictionManager.predictedMethods++;
 
         // Records prediction in CSV

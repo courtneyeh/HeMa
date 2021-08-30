@@ -1,4 +1,4 @@
-package util;
+package util.score;
 
 import model.Score;
 import model.TokenizedName;
@@ -48,7 +48,7 @@ public class UpdatedScore {
         if (truePositive + falseNegative != 0) recall = truePositive / (truePositive + falseNegative);
         if (precision + recall != 0) f1 = 2 * precision * recall / (precision + recall);
 
-        System.out.println("\n---------- Results ----------");
+        System.out.println("\n---------- Updated Score ----------");
         System.out.println("total = " + PredictionManager.methodCount);
         System.out.println("predicted = " + PredictionManager.predictedMethods);
         System.out.println("precision = " + precision);
