@@ -2,10 +2,6 @@ package util;
 
 public class Tokenizer {
 
-    public static void main(String[] args) {
-        System.out.println(tokenize(""));
-    }
-
     public static String tokenize(String str) {
         if (str == null || str.length() == 0) {
             return "";
