@@ -4,6 +4,7 @@ import model.Task;
 import model.TrainSet;
 import prediction.PredictionManager;
 import util.Recorder;
+import util.UpdatedScore;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,8 @@ public class HeMa {
         }
 
         System.out.println("Finished HeMa, " + new Timestamp(System.currentTimeMillis()));
-        predictionManager.printResults();
+
+        UpdatedScore.printResults();
     }
 
     private void extractDir(String dir) {

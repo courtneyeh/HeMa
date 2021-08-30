@@ -5,10 +5,10 @@ import model.Score;
 import model.TokenizedName;
 import util.Recorder;
 import util.Tokenizer;
+import util.UpdatedScore;
 
 public abstract class Predictor {
     final String TYPE;
-    int predicted = 0;
 
     protected Predictor(String type) {
         TYPE = type;
@@ -21,9 +21,9 @@ public abstract class Predictor {
         TokenizedName prediction = new TokenizedName(predictionString);
         TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
 
-        // Updates counts
-        Score score = prediction.score(reference);
-        predicted++;
+        // Updates scores
+        Score score = UpdatedScore.updateScore(reference, prediction);
+        PredictionManager.predictedMethods++;
 
         // Records prediction in CSV
         Recorder.save(reference.toString(), prediction.toString(), TYPE, score);

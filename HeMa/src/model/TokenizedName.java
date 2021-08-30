@@ -1,7 +1,5 @@
 package model;
 
-import prediction.PredictionManager;
-
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -18,29 +16,6 @@ public class TokenizedName {
         tokens.addAll(Arrays.asList(tokensStrings));
 
         methodName = str.replaceAll(" ", "|");
-    }
-
-    public Score score(TokenizedName reference) {
-        int tp = 0;
-        int fp = 0;
-        int fn = 0;
-
-        HashSet<String> refTokens = reference.tokens;
-
-        for (String predToken : tokens) {
-            if (refTokens.contains(predToken)) tp++;
-            else fp++;
-        }
-
-        for (String refToken : refTokens) {
-            if (!tokens.contains(refToken)) fn++;
-        }
-
-        PredictionManager.truePositive += tp;
-        PredictionManager.falsePositive += fp;
-        PredictionManager.falseNegative += fn;
-
-        return new Score(tp, fp, fn);
     }
 
     @Override
