@@ -16,6 +16,8 @@ import java.util.Map;
 
 public class TrainSet {
     private static final Map<Signature, Map<String, Integer>> data = new HashMap<>();
+    private static final String FILE_CSV = "trainSet.csv";
+    private static int samplesCount = 0;
 
     public static void initialize(String dataLocation) {
         System.out.println("Initializing TrainSet... " + new Timestamp(System.currentTimeMillis()));
@@ -46,12 +48,14 @@ public class TrainSet {
             }
         }
 
-        try (PrintWriter writer = new PrintWriter(new File("trainSet.csv"))) {
+        try (PrintWriter writer = new PrintWriter(new File(FILE_CSV))) {
             writer.write(sb.toString());
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Unable to write to trainSet.csv");
+            System.err.println("Unable to write to " + FILE_CSV);
         }
+
+        System.out.println(samplesCount + " train samples loaded. File: " + FILE_CSV);
     }
 
     private static void exploreClass(Path path, StringBuilder sb) {
@@ -69,6 +73,7 @@ public class TrainSet {
 
             // Update data with new methods
             for (MethodDeclaration m : nodes) {
+                samplesCount++;
                 Signature signature = new Signature(m);
                 Map<String, Integer> signatureMap = data.getOrDefault(signature, new HashMap<>());
 
@@ -87,11 +92,10 @@ public class TrainSet {
     }
 
     private static void load(String dataDirectory) {
-        int total = 0;
         List<String> lines = read(dataDirectory);
 
         for (String line : lines) {
-            total++;
+            samplesCount++;
             String[] strs = line.split(",");
             String method_name = strs[0].substring(1, strs[0].length() - 1);
             Signature signature = new Signature(strs[1].substring(1, strs[1].length() - 1));
@@ -101,7 +105,7 @@ public class TrainSet {
             counter.put(method_name, count);
             data.put(signature, counter);
         }
-        System.out.println(total + " train samples loaded.");
+        System.out.println(samplesCount + " train samples loaded.");
     }
 
     private static List<String> read(String filePath) {
