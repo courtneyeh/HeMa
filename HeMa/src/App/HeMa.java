@@ -40,6 +40,13 @@ public class HeMa {
 
         System.out.println("Finished HeMa, " + new Timestamp(System.currentTimeMillis()));
 
+        printResults();
+    }
+
+    private void printResults() {
+        System.out.println("\n---------- Results ----------");
+        System.out.println("total = " + PredictionManager.methodCount);
+        System.out.println("predicted = " + PredictionManager.predictedMethods);
         OriginalScore.printResults();
         UpdatedScore.printResults();
     }

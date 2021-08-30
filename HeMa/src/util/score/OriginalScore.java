@@ -11,8 +11,6 @@ public class OriginalScore {
 
     public static void printResults() {
         System.out.println("\n---------- Original Score ----------");
-        System.out.println("total = " + PredictionManager.methodCount);
-        System.out.println("predicted = " + PredictionManager.predictedMethods);
         System.out.println("correct = " + correctMethods);
         System.out.println("precision = " + correctMethods * 1.0 / PredictionManager.predictedMethods);
         System.out.println("recall = " + correctMethods * 1.0 / PredictionManager.methodCount);
