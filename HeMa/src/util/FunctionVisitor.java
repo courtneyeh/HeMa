@@ -11,9 +11,7 @@ public class FunctionVisitor extends VoidVisitorAdapter<Object> {
 
     @Override
     public void visit(MethodDeclaration node, Object arg) {
-        AnnotationExpr annotation = node.getAnnotationByClass(Override.class).orElse(null);
-
-        if (annotation == null && node.getBody().isPresent())
+        if (node.getBody().isPresent() && node.getBody().get().getStatements().size() > 0)
             m_Nodes.add(node);
 
         super.visit(node, arg);
