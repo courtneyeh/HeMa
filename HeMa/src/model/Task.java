@@ -13,8 +13,10 @@ import java.util.concurrent.Callable;
 
 public class Task implements Callable<Void> {
     String code;
+    Path path;
 
     public Task(Path path) {
+        this.path = path;
         try {
             this.code = new String(Files.readAllBytes(path));
         } catch (IOException e) {
@@ -27,7 +29,7 @@ public class Task implements Callable<Void> {
     public Void call() throws Exception {
         try {
             ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
-            for (MethodDeclaration m : nodes) HeMa.predictionManager.predict(m);
+            for (MethodDeclaration m : nodes) HeMa.predictionManager.predict(m, path);
 
         } catch (ParseException | IOException e) {
             e.printStackTrace();
