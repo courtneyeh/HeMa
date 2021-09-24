@@ -8,6 +8,8 @@ import util.Tokenizer;
 import util.score.OriginalScore;
 import util.score.UpdatedScore;
 
+import java.nio.file.Path;
+
 public abstract class Predictor {
     final String TYPE;
 
@@ -15,7 +17,7 @@ public abstract class Predictor {
         TYPE = type;
     }
 
-    boolean run(MethodDeclaration method) {
+    boolean run(MethodDeclaration method, Path path) {
         String predictionString = predict(method);
         if (predictionString == null) return false;
 
@@ -30,7 +32,7 @@ public abstract class Predictor {
         PredictionManager.predictedMethods++;
 
         // Records prediction in CSV
-        Recorder.save(reference.toString(), prediction.toString(), TYPE, score);
+        Recorder.save(reference.toString(), prediction.toString(), TYPE, score, path);
 
         return true;
     }

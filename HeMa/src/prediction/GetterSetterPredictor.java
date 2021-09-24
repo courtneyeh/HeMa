@@ -28,10 +28,10 @@ public abstract class GetterSetterPredictor extends Predictor {
         // Check returned value declared in enclosing class
         FieldDeclaration field = null;
 
-        if (!method.getParentNode().isPresent()) return null;
+        if (!method.getParentNode().isPresent()) return false;
         Node parentNode = method.getParentNode().get();
 
-        if (!(parentNode instanceof ClassOrInterfaceDeclaration)) return null;
+        if (!(parentNode instanceof ClassOrInterfaceDeclaration)) return false;
 
         ClassOrInterfaceDeclaration parent = (ClassOrInterfaceDeclaration) parentNode;
         List<FieldDeclaration> fieldDeclarations = parent.getFields();

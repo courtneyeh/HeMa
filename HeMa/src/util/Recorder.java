@@ -5,6 +5,7 @@ import model.Score;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 
 public class Recorder {
@@ -19,7 +20,7 @@ public class Recorder {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write("Method Name" + SEPARATOR + "Prediction" + SEPARATOR + "Successful Prediction" + SEPARATOR
                     + "Predictor Type" + SEPARATOR + "True Positive" + SEPARATOR + "False Positive" + SEPARATOR
-                    + "False Negative");
+                    + "False Negative" + SEPARATOR + "Path");
             bw.newLine();
             bw.close();
 
@@ -28,14 +29,15 @@ public class Recorder {
         }
     }
 
-    public static void save(String methodName, String prediction, String predictorType, Score score) {
+    public static void save(String methodName, String prediction, String predictorType, Score score, Path path) {
         String match = String.valueOf(methodName.equals(prediction));
 
         try {
             FileWriter fw = new FileWriter(SAVE_FILE, true);
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(methodName + SEPARATOR + prediction + SEPARATOR + match + SEPARATOR + predictorType + SEPARATOR
-                    + score.truePositive + SEPARATOR + score.falsePositive + SEPARATOR + score.falseNegative);
+                    + score.truePositive + SEPARATOR + score.falsePositive + SEPARATOR + score.falseNegative + SEPARATOR
+                    + path);
             bw.newLine();
             bw.close();
         } catch (IOException e) {
