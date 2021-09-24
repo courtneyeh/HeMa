@@ -1,0 +1,137 @@
+package prediction;
+
+import App.HeMa;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import model.Signature;
+import util.FileParser;
+import util.Tokenizer;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+public class OverriddenPredictor extends Predictor {
+
+    protected OverriddenPredictor() {
+        super("OVERRIDDEN");
+    }
+
+    @Override
+    String predict(MethodDeclaration method, Path path) {
+        // Check the method is overridden
+        if (!method.getAnnotationByClass(Override.class).isPresent()) return null;
+
+        // Get the class signature
+        if (!method.getParentNode().isPresent()) return null;
+        Node parentNode = method.getParentNode().get();
+
+        // Check the parent node of the method is a class or interface
+        if (!(parentNode instanceof ClassOrInterfaceDeclaration)) return null;
+        ClassOrInterfaceDeclaration parent = (ClassOrInterfaceDeclaration) parentNode;
+
+        // Check whether method with the same return value and parameters
+        NodeList<ClassOrInterfaceType> extendedList = parent.getExtendedTypes();
+        NodeList<ClassOrInterfaceType> implementedList = parent.getImplementedTypes();
+
+
+        // First consider implemented types, as the methods always need to be implemented
+        for (ClassOrInterfaceType type : parent.getImplementedTypes()) {
+            String code = getClassOrInterfaceCode(type, path);
+            if (code == null) continue;
+            String methodName = getFirstSignatureMatch(method, code, true);
+            if (methodName == null) continue;
+            return Tokenizer.tokenize(methodName).toLowerCase();
+        }
+
+        // Next consider classes and their abstract methods
+        for (ClassOrInterfaceType type : parent.getExtendedTypes()) {
+            String code = getClassOrInterfaceCode(type, path);
+            if (code == null) continue;
+            String methodName = getFirstSignatureMatch(method, code, true);
+            if (methodName == null) continue;
+            return Tokenizer.tokenize(methodName).toLowerCase();
+        }
+
+        // Next consider classes and their full methods
+        for (ClassOrInterfaceType type : parent.getExtendedTypes()) {
+            String code = getClassOrInterfaceCode(type, path);
+            if (code == null) continue;
+            String methodName = getFirstSignatureMatch(method, code, false);
+            if (methodName == null) continue;
+            return Tokenizer.tokenize(methodName).toLowerCase();
+        }
+
+        return null;
+    }
+
+    private String getClassOrInterfaceCode(ClassOrInterfaceType type, Path path) {
+        String fileName = type.getName() + ".java";
+
+        try {
+            // First try find file in current directory (same as class)
+            Path potentialPath = Path.of(path.getParent().toString() + "/" + fileName);
+            return Files.readString(potentialPath, StandardCharsets.US_ASCII);
+
+        } catch (IOException e) {
+            // The file could not be found, so search entire project for file
+            String[] pathSplit = path.toString().split(HeMa.evaluationDir, 2);
+            if (pathSplit.length != 2) return null;
+            String projectDir = getProjectDir(pathSplit[1]);
+
+            try (Stream<Path> stream = Files.walk(Paths.get(HeMa.evaluationDir + projectDir))) {
+                Optional<Path> result = stream.filter(Files::isRegularFile)
+                        .filter(p -> p.toString().endsWith(fileName)).findFirst();
+                if (result.isPresent()) return new String(Files.readAllBytes(result.get()));
+
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        }
+
+        return null;
+    }
+
+    private String getProjectDir(String pathSuffix) {
+        int index = 0;
+        if (pathSuffix.charAt(0) == '/') index++; // Start at second position
+
+        while (Character.isLetterOrDigit(pathSuffix.charAt(index)) || pathSuffix.charAt(index) == '_') {
+            index++;
+        }
+
+        return pathSuffix.substring(0, index);
+    }
+
+    private String getFirstSignatureMatch(MethodDeclaration original, String code, boolean noBody) {
+        CompilationUnit cu;
+        try {
+            cu = FileParser.parseFileWithRetries(code);
+        } catch (IOException ioException) {
+            return null; // Parse failed
+        }
+
+        if (cu == null) return null;
+
+        for (MethodDeclaration declaration : cu.findAll(MethodDeclaration.class)) {
+            if (declaration.getBody().isPresent() == noBody)
+                continue; // If there is a body, this is unlikely to be overridden
+
+            if (!new Signature(original).equals(new Signature(declaration))) {
+                continue;
+            }
+
+            return declaration.getName().asString();
+        }
+
+        return null;
+    }
+}

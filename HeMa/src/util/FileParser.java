@@ -22,7 +22,7 @@ public class FileParser {
         return functionVisitor.getMethodDeclarations();
     }
 
-    private static CompilationUnit parseFileWithRetries(String code) throws IOException {
+    public static CompilationUnit parseFileWithRetries(String code) throws IOException {
         final String classPrefix = "public class Test {";
         final String classSuffix = "}";
         final String methodPrefix = "SomeUnknownReturnType f() {";

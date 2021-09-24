@@ -17,6 +17,7 @@ public class PredictionManager {
     GetterPredictor getterPredictor = new GetterPredictor();
     SetterPredictor setterPredictor = new SetterPredictor();
     DelegationPredictor delegationPredictor = new DelegationPredictor();
+    OverriddenPredictor overriddenPredictor = new OverriddenPredictor();
     SignaturePredictor signaturePredictor = new SignaturePredictor();
 
     public void predict(MethodDeclaration method, Path path) {
@@ -25,6 +26,7 @@ public class PredictionManager {
         if (getterPredictor.run(method, path)) return;
         if (setterPredictor.run(method, path)) return;
         if (delegationPredictor.run(method, path)) return;
+        if (overriddenPredictor.run(method, path)) return;
         if (signaturePredictor.run(method, path)) return;
 
         // If no predictions were made, record in output CSV
