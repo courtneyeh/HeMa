@@ -23,10 +23,10 @@ public class PredictionManager {
     public void predict(MethodDeclaration method, Path path) {
         methodCount++;
 
+        if (overriddenPredictor.run(method, path)) return;
         if (getterPredictor.run(method, path)) return;
         if (setterPredictor.run(method, path)) return;
         if (delegationPredictor.run(method, path)) return;
-        if (overriddenPredictor.run(method, path)) return;
         if (signaturePredictor.run(method, path)) return;
 
         // If no predictions were made, record in output CSV
