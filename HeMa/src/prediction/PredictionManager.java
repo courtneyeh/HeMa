@@ -14,10 +14,10 @@ public class PredictionManager {
     public static int predictedMethods = 0;
 
     /* Predictors */
+    OverriddenPredictor overriddenPredictor = new OverriddenPredictor();
     GetterPredictor getterPredictor = new GetterPredictor();
     SetterPredictor setterPredictor = new SetterPredictor();
     DelegationPredictor delegationPredictor = new DelegationPredictor();
-    OverriddenPredictor overriddenPredictor = new OverriddenPredictor();
     SignaturePredictor signaturePredictor = new SignaturePredictor();
 
     public void predict(MethodDeclaration method, Path path) {
