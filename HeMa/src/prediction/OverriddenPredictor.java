@@ -28,44 +28,35 @@ public class OverriddenPredictor extends Predictor {
     @Override
     String predict(MethodDeclaration method, Path path) {
         // Check the method is overridden
-        if (!method.getAnnotationByClass(Override.class).isPresent()) return null;
+        if (method.getAnnotationByClass(Override.class).isEmpty()) return null;
 
         // Get the class signature
-        if (!method.getParentNode().isPresent()) return null;
+        if (method.getParentNode().isEmpty()) return null;
         Node parentNode = method.getParentNode().get();
 
         // Check the parent node of the method is a class or interface
         if (!(parentNode instanceof ClassOrInterfaceDeclaration)) return null;
         ClassOrInterfaceDeclaration parent = (ClassOrInterfaceDeclaration) parentNode;
 
-        // Check whether method with the same return value and parameters
-        NodeList<ClassOrInterfaceType> extendedList = parent.getExtendedTypes();
-        NodeList<ClassOrInterfaceType> implementedList = parent.getImplementedTypes();
-
-
         // First consider implemented types, as the methods always need to be implemented
-        for (ClassOrInterfaceType type : parent.getImplementedTypes()) {
-            String code = getClassOrInterfaceCode(type, path);
-            if (code == null) continue;
-            String methodName = getFirstSignatureMatch(method, code, true);
-            if (methodName == null) continue;
-            return Tokenizer.tokenize(methodName).toLowerCase();
-        }
+        String interfaceMethod = getOverrideMethodMatch(parent.getImplementedTypes(), method, path, true);
+        if (interfaceMethod != null) return interfaceMethod;
 
         // Next consider classes and their abstract methods
-        for (ClassOrInterfaceType type : parent.getExtendedTypes()) {
-            String code = getClassOrInterfaceCode(type, path);
-            if (code == null) continue;
-            String methodName = getFirstSignatureMatch(method, code, true);
-            if (methodName == null) continue;
-            return Tokenizer.tokenize(methodName).toLowerCase();
-        }
+        String abstractMethod = getOverrideMethodMatch(parent.getExtendedTypes(), method, path, true);
+        if (abstractMethod != null) return abstractMethod;
 
-        // Next consider classes and their full methods
-        for (ClassOrInterfaceType type : parent.getExtendedTypes()) {
+        // Next consider classes and their full methods (with bodies)
+        String fullMethod = getOverrideMethodMatch(parent.getExtendedTypes(), method, path, false);
+        return fullMethod; // Will return null if does not find a match
+    }
+
+    private String getOverrideMethodMatch(NodeList<ClassOrInterfaceType> types, MethodDeclaration originalMethod,
+                                          Path path, boolean noBody) {
+        for (ClassOrInterfaceType type : types) {
             String code = getClassOrInterfaceCode(type, path);
             if (code == null) continue;
-            String methodName = getFirstSignatureMatch(method, code, false);
+            String methodName = getFirstSignatureMatch(originalMethod, code, noBody);
             if (methodName == null) continue;
             return Tokenizer.tokenize(methodName).toLowerCase();
         }
