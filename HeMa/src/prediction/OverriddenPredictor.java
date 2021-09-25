@@ -6,6 +6,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import model.Signature;
 import util.FileParser;
@@ -48,7 +49,28 @@ public class OverriddenPredictor extends Predictor {
 
         // Next consider classes and their full methods (with bodies)
         String fullMethod = getOverrideMethodMatch(parent.getExtendedTypes(), method, path, false);
-        return fullMethod; // Will return null if does not find a match
+        if (fullMethod != null) return fullMethod;
+
+        // Consider generic Object methods that can be overridden (ex. equals, hashCode, toString)
+        NodeList<Parameter> params = method.getParameters();
+
+        // equals(Object obj)
+        if (method.getType().toString().equals("boolean") && params.size() == 1 && params.getFirst().isPresent()
+                && params.getFirst().get().getType().toString().equals("Object")) {
+            return Tokenizer.tokenize("equals").toLowerCase();
+        }
+
+        // hashCode()
+        if (method.getType().toString().equals("int") && params.size() == 0) {
+            return Tokenizer.tokenize("hashCode").toLowerCase();
+        }
+
+        // toString()
+        if (method.getType().toString().equals("String") && params.size() == 0) {
+            return Tokenizer.tokenize("toString").toLowerCase();
+        }
+
+        return null;
     }
 
     private String getOverrideMethodMatch(NodeList<ClassOrInterfaceType> types, MethodDeclaration originalMethod,
