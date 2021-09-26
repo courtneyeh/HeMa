@@ -20,16 +20,12 @@ public class TestPredictor extends Predictor {
         // Assert method has body
         if (method.getBody().isEmpty()) return null;
 
-        // Create list of tokens, based on variables and their types
-        List<String> tokens = new ArrayList<>();
-        method.findAll(VariableDeclarator.class).forEach(variableDeclarator -> {
-            updateTokenList(tokens, variableDeclarator.getTypeAsString()); // Class type
-            updateTokenList(tokens, variableDeclarator.getNameAsString()); // Variable name
-        });
-
-        // Create frequency HashMap, from list of tokens
+        // Create HashMap of tokens frequencies, based on variables and their types
         HashMap<String, Integer> frequency = new HashMap<>();
-        for (String t : tokens) frequency.put(t, frequency.getOrDefault(t, 0) + 1);
+        method.findAll(VariableDeclarator.class).forEach(variableDeclarator -> {
+            updateFrequenciesList(frequency, variableDeclarator.getTypeAsString()); // Class type
+            updateFrequenciesList(frequency, variableDeclarator.getNameAsString()); // Variable name
+        });
 
         // Create priority queue based on frequency of tokens
         Queue<String> queue = new PriorityQueue<>((String a, String b) -> frequency.get(b) - frequency.get(a));
@@ -39,10 +35,10 @@ public class TestPredictor extends Predictor {
         return Tokenizer.tokenize("test " + prediction).toLowerCase();
     }
 
-    private void updateTokenList(List<String> tokens, String str) {
-        for (String s : Tokenizer.tokenize(str).toLowerCase().split(" ")) {
-            if ("test".equals(s) || s.length() == 1 && Character.isDigit(s.charAt(0))) continue;
-            tokens.add(s);
+    private void updateFrequenciesList(HashMap<String, Integer> frequency, String str) {
+        for (String token : Tokenizer.tokenize(str).toLowerCase().split(" ")) {
+            if ("test".equals(token) || token.length() == 1 && Character.isDigit(token.charAt(0))) continue;
+            frequency.put(token, frequency.getOrDefault(token, 0) + 1);
         }
     }
 
