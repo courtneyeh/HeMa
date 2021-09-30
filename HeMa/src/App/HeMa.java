@@ -1,5 +1,6 @@
 package App;
 
+import JavaExtractor.Common.CommandLineValues;
 import model.Task;
 import model.TrainSet;
 import prediction.PredictionManager;
@@ -20,13 +21,15 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class HeMa {
     private final int numThreads;
     public static PredictionManager predictionManager = new PredictionManager();
+    private final CommandLineValues cmdLineValues;
 
-    HeMa(String dataDir, int numThreads) {
+    HeMa(String dataDir, int numThreads, CommandLineValues cmdLineValues) {
         // Set up prediction folder and add header
         Recorder.initialize();
         // Load trainset csv
         TrainSet.initialize(dataDir);
         this.numThreads = numThreads;
+        this.cmdLineValues = cmdLineValues;
     }
 
     public void start(String evaluationDir) {
@@ -64,7 +67,7 @@ public class HeMa {
                     .filter(Files::isRegularFile)
                     .filter(p -> p.toString().toLowerCase().endsWith(".java"))
                     .forEach(f -> {
-                        Task task = new Task(f);
+                        Task task = new Task(f, cmdLineValues);
                         tasks.add(task);
                     });
         } catch (IOException e) {

@@ -1,9 +1,11 @@
 package model;
 
 import App.HeMa;
+import JavaExtractor.Common.CommandLineValues;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import util.FileParser;
+import JavaExtractor.ExtractFeaturesTask;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,11 +14,13 @@ import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
 public class Task implements Callable<Void> {
+    private final CommandLineValues commandLineValues;
     String code;
     Path path;
 
-    public Task(Path path) {
+    public Task(Path path, CommandLineValues commandLineValues) {
         this.path = path;
+        this.commandLineValues = commandLineValues;
         try {
             this.code = new String(Files.readAllBytes(path));
         } catch (IOException e) {
@@ -29,6 +33,8 @@ public class Task implements Callable<Void> {
     public Void call() throws Exception {
         try {
             ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
+            ExtractFeaturesTask eft = new ExtractFeaturesTask(commandLineValues, path);
+
             for (MethodDeclaration m : nodes) HeMa.predictionManager.predict(m, path);
 
         } catch (ParseException | IOException e) {
