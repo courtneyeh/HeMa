@@ -36,6 +36,7 @@ public class HeMa {
         if (!root.exists() || !root.isDirectory()) return;
 
         File[] files = root.listFiles();
+        // iterate over top level files
         for (File f : Objects.requireNonNull(files)) {
             extractDir(f.getPath());
         }
@@ -58,11 +59,14 @@ public class HeMa {
         LinkedList<Task> tasks = new LinkedList<>();
 
         try {
-            Files.walk(Paths.get(dir)).filter(Files::isRegularFile)
-                    .filter(p -> p.toString().toLowerCase().endsWith(".java")).forEach(f -> {
-                Task task = new Task(f);
-                tasks.add(task);
-            });
+            // Iterate over directories
+            Files.walk(Paths.get(dir))
+                    .filter(Files::isRegularFile)
+                    .filter(p -> p.toString().toLowerCase().endsWith(".java"))
+                    .forEach(f -> {
+                        Task task = new Task(f);
+                        tasks.add(task);
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             return;
