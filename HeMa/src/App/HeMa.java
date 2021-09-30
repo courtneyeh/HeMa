@@ -22,7 +22,9 @@ public class HeMa {
     public static PredictionManager predictionManager = new PredictionManager();
 
     HeMa(String dataDir, int numThreads) {
+        // Set up prediction folder and add header
         Recorder.initialize();
+        // Load trainset csv
         TrainSet.initialize(dataDir);
         this.numThreads = numThreads;
     }
