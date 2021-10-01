@@ -14,22 +14,24 @@ public class PredictionManager {
     public static int predictedMethods = 0;
 
     /* Predictors */
-    TestPredictor testPredictor = new TestPredictor();
-    OverriddenPredictor overriddenPredictor = new OverriddenPredictor();
+//    TestPredictor testPredictor = new TestPredictor();
+//    OverriddenPredictor overriddenPredictor = new OverriddenPredictor();
     GetterPredictor getterPredictor = new GetterPredictor();
     SetterPredictor setterPredictor = new SetterPredictor();
     DelegationPredictor delegationPredictor = new DelegationPredictor();
-    SignaturePredictor signaturePredictor = new SignaturePredictor();
+    ReturnNamePredictor returnNamePredictor = new ReturnNamePredictor();
+//    SignaturePredictor signaturePredictor = new SignaturePredictor();
 
     public void predict(MethodDeclaration method, Path path) {
         methodCount++;
 
-        if (testPredictor.run(method, path)) return;
-        if (overriddenPredictor.run(method, path)) return;
+//        if (testPredictor.run(method, path)) return;
+//        if (overriddenPredictor.run(method, path)) return;
         if (getterPredictor.run(method, path)) return;
         if (setterPredictor.run(method, path)) return;
         if (delegationPredictor.run(method, path)) return;
-        if (signaturePredictor.run(method, path)) return;
+//        if (signaturePredictor.run(method, path)) return;
+        if (returnNamePredictor.run(method, path)) return;
 
         // If no predictions were made, record in output CSV
         TokenizedName reference = new TokenizedName(Tokenizer.tokenize(method.getNameAsString()));
