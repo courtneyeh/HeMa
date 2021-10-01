@@ -4,6 +4,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import util.Tokenizer;
 
+import java.nio.file.Path;
 import java.util.*;
 
 public class TestPredictor extends Predictor {
@@ -13,7 +14,7 @@ public class TestPredictor extends Predictor {
     }
 
     @Override
-    String predict(MethodDeclaration method) {
+    String predict(MethodDeclaration method, Path path) {
         // Check the method is overridden
         if (method.getAnnotationByName("Test").isEmpty()) return null;
 
