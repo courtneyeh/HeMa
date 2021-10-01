@@ -14,6 +14,7 @@ public class PredictionManager {
     public static int predictedMethods = 0;
 
     /* Predictors */
+    TestPredictor testPredictor = new TestPredictor();
     OverriddenPredictor overriddenPredictor = new OverriddenPredictor();
     GetterPredictor getterPredictor = new GetterPredictor();
     SetterPredictor setterPredictor = new SetterPredictor();
@@ -23,6 +24,7 @@ public class PredictionManager {
     public void predict(MethodDeclaration method, Path path) {
         methodCount++;
 
+        if (testPredictor.run(method, path)) return;
         if (overriddenPredictor.run(method, path)) return;
         if (getterPredictor.run(method, path)) return;
         if (setterPredictor.run(method, path)) return;
