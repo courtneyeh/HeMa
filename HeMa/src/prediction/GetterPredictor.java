@@ -8,6 +8,7 @@ import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.VoidType;
 import util.Tokenizer;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class GetterPredictor extends GetterSetterPredictor {
@@ -17,7 +18,7 @@ public class GetterPredictor extends GetterSetterPredictor {
     }
 
     @Override
-    public String predict(MethodDeclaration method) {
+    public String predict(MethodDeclaration method, Path path) {
         // Check method does not return void
         if (method.getType() instanceof VoidType) return null;
 

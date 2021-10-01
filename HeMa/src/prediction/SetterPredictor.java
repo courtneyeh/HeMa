@@ -7,6 +7,7 @@ import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.Expression;
 import util.Tokenizer;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,16 +18,13 @@ public class SetterPredictor extends GetterSetterPredictor {
     }
 
     @Override
-    public String predict(MethodDeclaration method) {
+    public String predict(MethodDeclaration method, Path path) {
         // Check there is a parameter
         if (method.getParameters().size() == 0) return null;
 
         // Check there is a single assignment
-
         if (!method.getBody().isPresent()) return null;
-
         List<AssignExpr> assignExprs = new ArrayList<>(method.getBody().get().getNodesByType(AssignExpr.class));
-
         if (assignExprs.size() != 1) return null;
 
         // Get the prediction

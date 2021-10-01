@@ -8,6 +8,6 @@ public class Main {
 
         if (evaluationDir == null || dataDir == null) return;
 
-        new HeMa(dataDir, numThreads).start(evaluationDir);
+        new HeMa(dataDir, numThreads, evaluationDir).start();
     }
 }

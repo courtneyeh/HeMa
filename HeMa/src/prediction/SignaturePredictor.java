@@ -5,6 +5,7 @@ import model.Signature;
 import model.TrainSet;
 import util.Tokenizer;
 
+import java.nio.file.Path;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -15,7 +16,7 @@ public class SignaturePredictor extends Predictor {
     }
 
     @Override
-    public String predict(MethodDeclaration node) {
+    public String predict(MethodDeclaration node, Path path) {
         Signature signature = new Signature(node);
 
         // Predict based on signature of training set
