@@ -18,17 +18,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class HeMa {
-    private final int numThreads;
+    public static String evaluationDir;
     public static PredictionManager predictionManager = new PredictionManager();
+    private final int numThreads;
 
-    HeMa(String dataDir, int numThreads) {
+    HeMa(String dataDir, int numThreads, String evaluationDir) {
         Recorder.initialize();
         TrainSet.initialize(dataDir);
         this.numThreads = numThreads;
+        HeMa.evaluationDir = evaluationDir;
     }
 
-    public void start(String evaluationDir) {
-
+    public void start() {
         System.out.println("Starting HeMa... " + new Timestamp(System.currentTimeMillis()));
         File root = new File(evaluationDir);
         if (!root.exists() || !root.isDirectory()) return;

@@ -18,7 +18,7 @@ public abstract class Predictor {
     }
 
     boolean run(MethodDeclaration method, Path path) {
-        String predictionString = predict(method);
+        String predictionString = predict(method, path);
         if (predictionString == null) return false;
 
         String referenceString = Tokenizer.tokenize(method.getNameAsString());
@@ -43,5 +43,5 @@ public abstract class Predictor {
      * @param method declaration
      * @return String representation of the prediction, null if no prediction was made
      */
-    abstract String predict(MethodDeclaration method);
+    abstract String predict(MethodDeclaration method, Path path);
 }
