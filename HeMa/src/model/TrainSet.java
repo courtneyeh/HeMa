@@ -9,10 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class TrainSet {
     private static final Map<Signature, Map<String, Integer>> data = new HashMap<>();
@@ -40,9 +38,9 @@ public class TrainSet {
         File root = new File(dataDirectory);
 
         if (root.exists() && root.isDirectory()) {
-            try {
-                Files.walk(Paths.get(dataDirectory)).filter(Files::isRegularFile)
-                        .filter(p -> p.toString().toLowerCase().endsWith(".java")).forEach(path -> exploreClass(path, sb));
+            try (Stream<Path> stream = Files.walk(Paths.get(dataDirectory))) {
+                stream.filter(Files::isRegularFile).filter(p -> p.toString().toLowerCase().endsWith(".java"))
+                        .forEach(path -> exploreClass(path, sb));
             } catch (IOException e) {
                 e.printStackTrace();
             }
