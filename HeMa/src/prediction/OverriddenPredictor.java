@@ -117,7 +117,7 @@ public class OverriddenPredictor extends Predictor {
         int index = 0;
         if (pathSuffix.charAt(0) == '/') index++; // Start at second position
 
-        while (Character.isLetterOrDigit(pathSuffix.charAt(index)) || pathSuffix.charAt(index) == '_') {
+        while (pathSuffix.charAt(index) != '/') {
             index++;
         }
 
