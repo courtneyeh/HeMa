@@ -16,7 +16,7 @@ public class Signature {
     public Signature(MethodDeclaration node) {
         Type returnType = node.getType();
         removeComment(returnType);
-        this.return_type = returnType.toString();
+        this.return_type = returnType.asString().replaceAll("/.*?/", ""); // Remove leftover comments
 
         List<Parameter> parameters = node.getParameters();
         this.param_num = parameters.size();
