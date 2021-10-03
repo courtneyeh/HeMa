@@ -3,12 +3,11 @@
 ## Getting Started
 **Program Arguments:**
 
-Option 1: Load csv training set
+Run the program with the following arguments.
 ```
-projectDirectory numberThreads trainingCSV
-```
-
-Option 2: Create training set
-```
-projectDirectory numberThreads trainingDirectory
+--train [training directory or csv file]
+--max_path_length 8
+--max_path_width 2
+--dir [test directory]
+--num_threads [thread amount]
 ```
