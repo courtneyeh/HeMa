@@ -15,8 +15,8 @@ public class PredictionManager {
     public static int predictedMethods = 0;
 
     /* Predictors */
-    TestPredictor testPredictor = new TestPredictor();
-    OverriddenPredictor overriddenPredictor = new OverriddenPredictor();
+    TestPredictor testPredictor = new TestPredictor();                      // New Predictor
+    OverriddenPredictor overriddenPredictor = new OverriddenPredictor();    // New Predictor
     GetterPredictor getterPredictor = new GetterPredictor();
     SetterPredictor setterPredictor = new SetterPredictor();
     DelegationPredictor delegationPredictor = new DelegationPredictor();
@@ -25,8 +25,8 @@ public class PredictionManager {
     public void predict(MethodDeclaration method, Path path, MethodAST ast) {
         methodCount++;
 
-        if (testPredictor.run(method, path, ast)) return;
-        if (overriddenPredictor.run(method, path, ast)) return;
+        if (testPredictor.run(method, path, ast)) return;                   // New Predictor
+        if (overriddenPredictor.run(method, path, ast)) return;             // New Predictor
         if (getterPredictor.run(method, path, ast)) return;
         if (setterPredictor.run(method, path, ast)) return;
         if (delegationPredictor.run(method, path, ast)) return;
