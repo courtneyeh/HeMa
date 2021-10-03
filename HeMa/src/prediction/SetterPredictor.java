@@ -23,7 +23,7 @@ public class SetterPredictor extends GetterSetterPredictor {
         if (method.getParameters().size() == 0) return null;
 
         // Check there is a single assignment
-        if (!method.getBody().isPresent()) return null;
+        if (method.getBody().isEmpty()) return null;
         List<AssignExpr> assignExprs = new ArrayList<>(method.getBody().get().getNodesByType(AssignExpr.class));
         if (assignExprs.size() != 1) return null;
 

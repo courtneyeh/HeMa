@@ -13,6 +13,7 @@ public class TokenizedName {
 
     public TokenizedName(String str) {
         str = str.toLowerCase();
+
         tokens = new HashSet<>();
 
         // Get the token strings
