@@ -15,13 +15,12 @@ public class Main {
             return;
         }
 
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        System.out.println("Working Directory: " + System.getProperty("user.dir"));
         String evaluationDir = s_CommandLineValues.Dir;
         int numThreads = s_CommandLineValues.NumThreads;
         String dataDir = s_CommandLineValues.Train;
 
         if (evaluationDir == null || dataDir == null) return;
-
-        new HeMa(dataDir, numThreads, evaluationDir, s_CommandLineValues).start();
+        new HeMa(dataDir, numThreads, evaluationDir).start();
     }
 }

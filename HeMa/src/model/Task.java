@@ -20,13 +20,17 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 public class Task implements Callable<Void> {
-    private final CommandLineValues commandLineValues;
+    /**
+     * Edit Commands Based on Your System
+     **/
+    private static final String javaPath = "java";
+    private static final String javaExtractorJarPath = "./HeMa/JavaExtractor.jar";
+
     String code;
     Path path;
 
-    public Task(Path path, CommandLineValues commandLineValues) {
+    public Task(Path path) {
         this.path = path;
-        this.commandLineValues = commandLineValues;
         try {
             this.code = new String(Files.readAllBytes(path));
         } catch (IOException e) {
@@ -39,26 +43,21 @@ public class Task implements Callable<Void> {
         ArrayList<MethodAST> filesMethods = new ArrayList<>();
 
         Runtime r = Runtime.getRuntime();
-//        String[] commands = {"/home/glow250/p4p/jdk-15.0.2/bin/java","-Dfile.encoding=UTF-8",
-//                "-classpath","/home/glow250/JPredict/wLWPRwYIyv:/home/glow250/JPredict/ZQAjJi9LEo/javaparser-core-3.0.0-alpha.4.jar:/home/glow250/JPredict/VXy3kJ4MLC/commons-io-1.3.2.jar:/home/glow250/JPredict/uH876y9BWi/jackson-databind-2.9.10.4.jar:/home/glow250/JPredict/bXgM41le7D/jackson-annotations-2.9.10.jar:/home/glow250/JPredict/yzVqIV0y0x/jackson-core-2.9.10.jar:/home/glow250/JPredict/P5fTBvkCYc/args4j-2.33.jar:/home/glow250/JPredict/ke0wETmXAm/commons-lang3-3.5.jar",
-//                "JavaExtractor.App","--max_path_length","8","--max_path_width","2",
-//                "--dir",file,"--num_threads","1"};
-        String[] commands = {"java","-jar",
-                "JavaExtractor.jar","--max_path_length","8","--max_path_width","2",
-                "--dir",file,"--num_threads","1"};
+        String[] commands = {javaPath, "-jar", javaExtractorJarPath, "--max_path_length", "8", "--max_path_width", "2",
+                "--dir", file, "--num_threads", "1"};
+
         try {
             Process p = r.exec(commands);
 
-            if(!p.waitFor(100, TimeUnit.SECONDS)){
+            if (!p.waitFor(100, TimeUnit.SECONDS)) {
                 return null;
             }
 
             BufferedReader b = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line = "";
-
+            String line;
             while ((line = b.readLine()) != null) {
                 String name = line.split(",")[0];
-                int length = new Integer(line.split(",")[1]);
+                int length = Integer.parseInt(line.split(",")[1]);
                 filesMethods.add(new MethodAST(name, length));
             }
 
@@ -73,14 +72,16 @@ public class Task implements Callable<Void> {
         try {
             ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
             ArrayList<MethodAST> c2v_methods = executeBashCommand(path.toString());
-            if (c2v_methods == null){
+            if (c2v_methods == null) {
                 System.out.println(path + ": Timed Out");
-                for (MethodDeclaration m : nodes) HeMa.predictionManager.predict(m, path, new MethodAST("Timed Out", -2));
-            }else if(c2v_methods.size() != nodes.size()){
+                for (MethodDeclaration m : nodes)
+                    HeMa.predictionManager.predict(m, path, new MethodAST("Timed Out", -2));
+            } else if (c2v_methods.size() != nodes.size()) {
                 System.out.println(path + ": Not Equal");
-                for (MethodDeclaration m : nodes) HeMa.predictionManager.predict(m, path, new MethodAST("No Match", -1));
-            }else{
-                for(int i = 0; i < nodes.size(); i++){
+                for (MethodDeclaration m : nodes)
+                    HeMa.predictionManager.predict(m, path, new MethodAST("No Match", -1));
+            } else {
+                for (int i = 0; i < nodes.size(); i++) {
                     HeMa.predictionManager.predict(nodes.get(i), path, c2v_methods.get(i));
                 }
             }
@@ -95,6 +96,4 @@ public class Task implements Callable<Void> {
         runMethod();
         return null;
     }
-
-
 }

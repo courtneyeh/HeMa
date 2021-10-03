@@ -28,7 +28,7 @@ public class GetterPredictor extends GetterSetterPredictor {
 
         // Check the returned value is declared in the enclosing class
         ReturnStmt returnStmt = returnStmts.get(0);
-        if (!returnStmt.getExpression().isPresent()) return null;
+        if (returnStmt.getExpression().isEmpty()) return null;
         Expression expr = returnStmt.getExpression().get();
 
         String prediction = getPrediction(expr);

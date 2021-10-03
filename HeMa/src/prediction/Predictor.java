@@ -1,7 +1,6 @@
 package prediction;
 
 import JavaExtractor.MethodAST;
-import JavaExtractor.MethodAST;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import model.Score;
 import model.TokenizedName;

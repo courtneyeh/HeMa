@@ -10,8 +10,8 @@ import java.nio.file.Path;
 import java.sql.Timestamp;
 
 public class Recorder {
-    private static String SAVE_FILE;
     private static final String SEPARATOR = ",";
+    private static String SAVE_FILE;
 
     public static void initialize() {
         SAVE_FILE = "HeMa_predictions_" + new Timestamp(System.currentTimeMillis()) + ".csv";

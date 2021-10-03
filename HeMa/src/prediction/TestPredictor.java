@@ -5,7 +5,9 @@ import com.github.javaparser.ast.body.VariableDeclarator;
 import util.Tokenizer;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashMap;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class TestPredictor extends Predictor {
 
