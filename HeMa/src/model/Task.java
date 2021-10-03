@@ -89,14 +89,6 @@ public class Task implements Callable<Void> {
 
     @Override
     public Void call() throws Exception {
-//        try {
-//            ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
-//            ExtractFeaturesTask eft = new ExtractFeaturesTask(commandLineValues, path);
-//            ArrayList<MethodAST> c2v_methods = eft.getMethodsAndAsts();
-//            for (MethodDeclaration m : nodes) HeMa.predictionManager.predict(m, path);
-//        } catch (ParseException | IOException e) {
-//            e.printStackTrace();
-//        }
         runMethod();
         return null;
     }
