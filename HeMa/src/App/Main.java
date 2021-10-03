@@ -22,6 +22,6 @@ public class Main {
 
         if (evaluationDir == null || dataDir == null) return;
 
-        new HeMa(dataDir, numThreads, s_CommandLineValues).start(evaluationDir);
+        new HeMa(dataDir, numThreads, evaluationDir, s_CommandLineValues).start();
     }
 }

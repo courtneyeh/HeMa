@@ -8,6 +8,7 @@ import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.github.javaparser.ast.stmt.Statement;
 import util.Tokenizer;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public class DelegationPredictor extends Predictor {
@@ -17,7 +18,7 @@ public class DelegationPredictor extends Predictor {
     }
 
     @Override
-    public String predict(MethodDeclaration node) {
+    public String predict(MethodDeclaration node, Path path) {
         // Check there is a single statement
         if (!node.getBody().isPresent()) return null;
 

@@ -2,7 +2,6 @@ package model;
 
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import me.tongfei.progressbar.ProgressBar;
 import util.FileParser;
 
 import java.io.*;
@@ -10,10 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class TrainSet {
     private static final Map<Signature, Map<String, Integer>> data = new HashMap<>();
@@ -26,7 +23,6 @@ public class TrainSet {
             throw new RuntimeException("Provide a directory for training, or a train set CSV");
         }
 
-        // If csv parsed in or raw java files
         if (dataLocation.endsWith(".csv")) {
             load(dataLocation);
         } else {
@@ -40,22 +36,15 @@ public class TrainSet {
 
         // Initialize Directory
         File root = new File(dataDirectory);
-        try (ProgressBar pb = new ProgressBar("Creating Training Set", 1875)){
-            if (root.exists() && root.isDirectory()) {
-                try {
-                    // Iterate over paths with walk i.e. each path is a directory
-                    // For each java file in a call the exploreClass method
-                    Files.walk(Paths.get(dataDirectory))
-                            .filter(Files::isRegularFile)
-                            .filter(p -> p.toString().toLowerCase().endsWith(".java"))
-                            .peek(path -> pb.step())
-                            .forEach(path -> exploreClass(path, sb));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
+        if (root.exists() && root.isDirectory()) {
+            try (Stream<Path> stream = Files.walk(Paths.get(dataDirectory))) {
+                stream.filter(Files::isRegularFile).filter(p -> p.toString().toLowerCase().endsWith(".java"))
+                        .forEach(path -> exploreClass(path, sb));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-
 
         try (PrintWriter writer = new PrintWriter(new File(FILE_CSV))) {
             writer.write(sb.toString());
@@ -69,7 +58,6 @@ public class TrainSet {
 
     private static void exploreClass(Path path, StringBuilder sb) {
         // Initialize the code from class
-//        System.out.println("exploring file: " + path.getFileName());
         String code;
         try {
             code = new String(Files.readAllBytes(path));
@@ -95,6 +83,7 @@ public class TrainSet {
 
                 sb.append('"').append(methodName).append('"').append(',').append('"').append(signature).append('"').append('\n');
             }
+
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
@@ -102,22 +91,18 @@ public class TrainSet {
 
     private static void load(String dataDirectory) {
         List<String> lines = read(dataDirectory);
-        for (String line : lines){
-            try{
-                samplesCount++;
-                String[] strs = line.split(",");
-                String method_name = strs[0].substring(1, strs[0].length() - 1);
-                Signature signature = new Signature(strs[1].substring(1, strs[1].length() - 1));
 
-                Map<String, Integer> counter = data.getOrDefault(signature, new HashMap<>());
-                int count = counter.getOrDefault(method_name, 0) + 1;
-                counter.put(method_name, count);
-                data.put(signature, counter);
-            }catch(Exception e){
-                samplesCount--;
-            }
+        for (String line : lines) {
+            samplesCount++;
+            String[] strs = line.split(",");
+            String method_name = strs[0].substring(1, strs[0].length() - 1);
+            Signature signature = new Signature(strs[1].substring(1, strs[1].length() - 1));
+
+            Map<String, Integer> counter = data.getOrDefault(signature, new HashMap<>());
+            int count = counter.getOrDefault(method_name, 0) + 1;
+            counter.put(method_name, count);
+            data.put(signature, counter);
         }
-
         System.out.println(samplesCount + " train samples loaded.");
     }
 

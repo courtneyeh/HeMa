@@ -30,27 +30,26 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class HeMa {
-    private final int numThreads;
+    public static String evaluationDir;
     public static PredictionManager predictionManager = new PredictionManager();
+    private final int numThreads;
     private final CommandLineValues cmdLineValues;
 
-    public HeMa(String dataDir, int numThreads, CommandLineValues cmdLineValues) {
+    HeMa(String dataDir, int numThreads, String evaluationDir, CommandLineValues cmdLineValues) {
         // Set up prediction folder and add header
         Recorder.initialize();
-        // Load trainset csv
         TrainSet.initialize(dataDir);
         this.numThreads = numThreads;
+        HeMa.evaluationDir = evaluationDir;
         this.cmdLineValues = cmdLineValues;
     }
 
-    public void start(String evaluationDir) {
-
+    public void start() {
         System.out.println("Starting HeMa... " + new Timestamp(System.currentTimeMillis()));
         File root = new File(evaluationDir);
         if (!root.exists() || !root.isDirectory()) return;
 
         File[] files = root.listFiles();
-        // iterate over top level files
         for (File f : Objects.requireNonNull(files)) {
             extractDir(f.getPath());
         }
@@ -100,9 +99,8 @@ public class HeMa {
     private void extractDir(String dir) {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(numThreads);
         LinkedList<Task> tasks = new LinkedList<>();
-        try {
-            // Iterate over directories
 
+        try {
             Files.walk(Paths.get(dir))
                     .filter(Files::isRegularFile)
                     .filter(p -> p.toString().toLowerCase().endsWith(".java"))
@@ -122,7 +120,5 @@ public class HeMa {
         } finally {
             executor.shutdown();
         }
-
-
     }
 }
