@@ -30,7 +30,6 @@ public class ReturnNamePredictor extends Predictor {
         Expression expr = returnStmt.getExpression().get();
 
         if (expr.isNameExpr()) {
-            System.out.println(method.getName() + ", predict: " + expr.asNameExpr().getNameAsString());
             return Tokenizer.tokenize(expr.asNameExpr().getNameAsString()).toLowerCase();
         }
 
