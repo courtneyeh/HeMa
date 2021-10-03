@@ -1,5 +1,6 @@
 package util;
 
+import JavaExtractor.MethodAST;
 import model.Score;
 
 import java.io.BufferedWriter;
@@ -29,7 +30,7 @@ public class Recorder {
         }
     }
 
-    public static void save(String methodName, String prediction, String predictorType, Score score, Path path) {
+    public static void save(String methodName, String prediction, String predictorType, Score score, Path path, MethodAST ast) {
         String match = String.valueOf(methodName.equals(prediction));
 
         try {
@@ -37,7 +38,7 @@ public class Recorder {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write(methodName + SEPARATOR + prediction + SEPARATOR + match + SEPARATOR + predictorType + SEPARATOR
                     + score.truePositive + SEPARATOR + score.falsePositive + SEPARATOR + score.falseNegative + SEPARATOR
-                    + path);
+                    + path + SEPARATOR + ast.name + SEPARATOR + ast.ast_length);
             bw.newLine();
             bw.close();
         } catch (IOException e) {

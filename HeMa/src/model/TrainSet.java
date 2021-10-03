@@ -102,18 +102,22 @@ public class TrainSet {
 
     private static void load(String dataDirectory) {
         List<String> lines = read(dataDirectory);
+        for (String line : lines){
+            try{
+                samplesCount++;
+                String[] strs = line.split(",");
+                String method_name = strs[0].substring(1, strs[0].length() - 1);
+                Signature signature = new Signature(strs[1].substring(1, strs[1].length() - 1));
 
-        for (String line : lines) {
-            samplesCount++;
-            String[] strs = line.split(",");
-            String method_name = strs[0].substring(1, strs[0].length() - 1);
-            Signature signature = new Signature(strs[1].substring(1, strs[1].length() - 1));
-
-            Map<String, Integer> counter = data.getOrDefault(signature, new HashMap<>());
-            int count = counter.getOrDefault(method_name, 0) + 1;
-            counter.put(method_name, count);
-            data.put(signature, counter);
+                Map<String, Integer> counter = data.getOrDefault(signature, new HashMap<>());
+                int count = counter.getOrDefault(method_name, 0) + 1;
+                counter.put(method_name, count);
+                data.put(signature, counter);
+            }catch(Exception e){
+                samplesCount--;
+            }
         }
+
         System.out.println(samplesCount + " train samples loaded.");
     }
 

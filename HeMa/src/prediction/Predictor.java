@@ -1,5 +1,6 @@
 package prediction;
 
+import JavaExtractor.MethodAST;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import model.Score;
 import model.TokenizedName;
@@ -17,7 +18,7 @@ public abstract class Predictor {
         TYPE = type;
     }
 
-    boolean run(MethodDeclaration method, Path path) {
+    boolean run(MethodDeclaration method, Path path, MethodAST ast) {
         String predictionString = predict(method);
         if (predictionString == null) return false;
 
@@ -32,7 +33,7 @@ public abstract class Predictor {
         PredictionManager.predictedMethods++;
 
         // Records prediction in CSV
-        Recorder.save(reference.toString(), prediction.toString(), TYPE, score, path);
+        Recorder.save(reference.toString(), prediction.toString(), TYPE, score, path, ast);
 
         return true;
     }
