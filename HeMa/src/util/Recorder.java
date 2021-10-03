@@ -21,7 +21,7 @@ public class Recorder {
             BufferedWriter bw = new BufferedWriter(fw);
             bw.write("Method Name" + SEPARATOR + "Prediction" + SEPARATOR + "Successful Prediction" + SEPARATOR
                     + "Predictor Type" + SEPARATOR + "True Positive" + SEPARATOR + "False Positive" + SEPARATOR
-                    + "False Negative" + SEPARATOR + "Path");
+                    + "False Negative" + SEPARATOR + "Path" + SEPARATOR + "Match Status" + SEPARATOR + "AST");
             bw.newLine();
             bw.close();
 
