@@ -43,7 +43,7 @@ public class Task implements Callable<Void> {
 //                "-classpath","/home/glow250/JPredict/wLWPRwYIyv:/home/glow250/JPredict/ZQAjJi9LEo/javaparser-core-3.0.0-alpha.4.jar:/home/glow250/JPredict/VXy3kJ4MLC/commons-io-1.3.2.jar:/home/glow250/JPredict/uH876y9BWi/jackson-databind-2.9.10.4.jar:/home/glow250/JPredict/bXgM41le7D/jackson-annotations-2.9.10.jar:/home/glow250/JPredict/yzVqIV0y0x/jackson-core-2.9.10.jar:/home/glow250/JPredict/P5fTBvkCYc/args4j-2.33.jar:/home/glow250/JPredict/ke0wETmXAm/commons-lang3-3.5.jar",
 //                "JavaExtractor.App","--max_path_length","8","--max_path_width","2",
 //                "--dir",file,"--num_threads","1"};
-        String[] commands = {"/home/glow250/p4p/jdk-15.0.2/bin/java","-jar",
+        String[] commands = {"java","-jar",
                 "JavaExtractor.jar","--max_path_length","8","--max_path_width","2",
                 "--dir",file,"--num_threads","1"};
         try {
