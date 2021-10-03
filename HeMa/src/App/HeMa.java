@@ -1,5 +1,6 @@
 package App;
 
+import JavaExtractor.Common.CommandLineValues;
 import model.Task;
 import model.TrainSet;
 import prediction.PredictionManager;
@@ -22,7 +23,7 @@ public class HeMa {
     public static PredictionManager predictionManager = new PredictionManager();
     private final int numThreads;
 
-    HeMa(String dataDir, int numThreads, String evaluationDir) {
+    public HeMa(String dataDir, int numThreads, String evaluationDir) {
         Recorder.initialize();
         TrainSet.initialize(dataDir);
         this.numThreads = numThreads;
@@ -40,7 +41,6 @@ public class HeMa {
         }
 
         System.out.println("Finished HeMa, " + new Timestamp(System.currentTimeMillis()));
-
         printResults();
     }
 
@@ -57,11 +57,13 @@ public class HeMa {
         LinkedList<Task> tasks = new LinkedList<>();
 
         try {
-            Files.walk(Paths.get(dir)).filter(Files::isRegularFile)
-                    .filter(p -> p.toString().toLowerCase().endsWith(".java")).forEach(f -> {
-                Task task = new Task(f);
-                tasks.add(task);
-            });
+            Files.walk(Paths.get(dir))
+                    .filter(Files::isRegularFile)
+                    .filter(p -> p.toString().toLowerCase().endsWith(".java"))
+                    .forEach(f -> {
+                        Task task = new Task(f);
+                        tasks.add(task);
+                    });
         } catch (IOException e) {
             e.printStackTrace();
             return;

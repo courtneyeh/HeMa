@@ -20,7 +20,7 @@ public class DelegationPredictor extends Predictor {
     @Override
     public String predict(MethodDeclaration node, Path path) {
         // Check there is a single statement
-        if (!node.getBody().isPresent()) return null;
+        if (node.getBody().isEmpty()) return null;
 
         List<Statement> stmts = node.getBody().get().getStatements();
         if (stmts.size() != 1) return null;
@@ -31,7 +31,7 @@ public class DelegationPredictor extends Predictor {
         if (stmt instanceof ExpressionStmt) {
             expr = ((ExpressionStmt) stmt).getExpression();
         } else if (stmt instanceof ReturnStmt) {
-            if (!((ReturnStmt) stmt).getExpression().isPresent()) return null;
+            if (((ReturnStmt) stmt).getExpression().isEmpty()) return null;
             expr = ((ReturnStmt) stmt).getExpression().get();
         } else {
             return null;

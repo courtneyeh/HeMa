@@ -9,7 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class TrainSet {
@@ -80,7 +83,6 @@ public class TrainSet {
                 signatureMap.put(methodName, times);
 
                 data.put(signature, signatureMap);
-
                 sb.append('"').append(methodName).append('"').append(',').append('"').append(signature).append('"').append('\n');
             }
 
