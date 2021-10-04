@@ -1,6 +1,5 @@
 package App;
 
-import JavaExtractor.Common.CommandLineValues;
 import model.Task;
 import model.TrainSet;
 import prediction.PredictionManager;
@@ -11,12 +10,14 @@ import util.score.UpdatedScore;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.Stream;
 
 public class HeMa {
     public static String evaluationDir;
@@ -56,9 +57,8 @@ public class HeMa {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(numThreads);
         LinkedList<Task> tasks = new LinkedList<>();
 
-        try {
-            Files.walk(Paths.get(dir))
-                    .filter(Files::isRegularFile)
+        try (Stream<Path> stream = Files.walk(Paths.get(dir))) {
+            stream.filter(Files::isRegularFile)
                     .filter(p -> p.toString().toLowerCase().endsWith(".java"))
                     .forEach(f -> {
                         Task task = new Task(f);
