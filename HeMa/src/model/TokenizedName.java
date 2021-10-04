@@ -33,6 +33,17 @@ public class TokenizedName {
         methodName = String.join("|", noNumberTokenStrings);
     }
 
+    public TokenizedName() {
+    }
+
+    public static TokenizedName fromTokenised(String name){
+        TokenizedName name_tokens = new TokenizedName();
+        name_tokens.methodName = name;
+        String[] name_tokens_arr = name_tokens.methodName.split("\\|");
+        name_tokens.tokens = new HashSet<>(Arrays.asList(name_tokens_arr));
+        return name_tokens;
+    }
+
     public static boolean onlyDigits(String str) {
         // Regex to check string contains only digits
         String regex = "[0-9]+";

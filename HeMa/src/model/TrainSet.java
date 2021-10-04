@@ -2,6 +2,7 @@ package model;
 
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import me.tongfei.progressbar.ProgressBar;
 import util.FileParser;
 
 import java.io.*;
@@ -13,12 +14,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class TrainSet {
     private static final Map<Signature, Map<String, Integer>> data = new HashMap<>();
     private static final String FILE_CSV = "trainSet.csv";
-    private static int samplesCount = 0;
+    private static AtomicInteger samplesCount = new AtomicInteger(0);
 
     public static void initialize(String dataLocation) {
         System.out.println("Initializing TrainSet... " + new Timestamp(System.currentTimeMillis()));
@@ -39,13 +41,16 @@ public class TrainSet {
 
         // Initialize Directory
         File root = new File(dataDirectory);
-
-        if (root.exists() && root.isDirectory()) {
-            try (Stream<Path> stream = Files.walk(Paths.get(dataDirectory))) {
-                stream.filter(Files::isRegularFile).filter(p -> p.toString().toLowerCase().endsWith(".java"))
-                        .forEach(path -> exploreClass(path, sb));
-            } catch (IOException e) {
-                e.printStackTrace();
+        try (ProgressBar pb = new ProgressBar("Creating Training Set", 16000000)) {
+            if (root.exists() && root.isDirectory()) {
+                try (Stream<Path> stream = Files.walk(Paths.get(dataDirectory))) {
+                    stream.filter(Files::isRegularFile)
+                            .filter(p -> p.toString().toLowerCase().endsWith(".java"))
+                            .peek(path -> pb.stepTo(samplesCount.get()))
+                            .forEach(path -> exploreClass(path, sb));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -70,11 +75,16 @@ public class TrainSet {
         }
 
         try {
-            ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
+            ArrayList<MethodDeclaration> nodes = null;
+            try{
+                nodes = FileParser.extractFeatures(code);
+            }catch(StackOverflowError e){
+                return;
+            }
 
             // Update data with new methods
             for (MethodDeclaration m : nodes) {
-                samplesCount++;
+                samplesCount.getAndIncrement();
                 Signature signature = new Signature(m);
                 Map<String, Integer> signatureMap = data.getOrDefault(signature, new HashMap<>());
 
@@ -95,7 +105,7 @@ public class TrainSet {
         List<String> lines = read(dataDirectory);
 
         for (String line : lines) {
-            samplesCount++;
+            samplesCount.getAndIncrement();
             String[] strs = line.split(",");
             String method_name = strs[0].substring(1, strs[0].length() - 1);
             Signature signature = new Signature(strs[1].substring(1, strs[1].length() - 1));
