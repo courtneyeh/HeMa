@@ -9,6 +9,9 @@ import me.tongfei.progressbar.ProgressBar;
 import util.FileParser;
 import JavaExtractor.ExtractFeaturesTask;
 import JavaExtractor.MethodAST;
+import util.Recorder;
+import util.Tokenizer;
+import util.score.UpdatedScore;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,8 +26,10 @@ public class Task implements Callable<Void> {
     /**
      * Edit Commands Based on Your System
      **/
-    private static final String javaPath = "java";
-    private static final String javaExtractorJarPath = "./HeMa/JavaExtractor.jar";
+    private static final String javaPath = "/home/glow250/p4p/jdk-15.0.2/bin/java";
+    private static final String javaExtractorJarPath = "JavaExtractor.jar";
+//    private static final String javaPath = "java";
+//    private static final String javaExtractorJarPath = "./HeMa/JavaExtractor.jar";
 
     String code;
     Path path;
@@ -39,7 +44,7 @@ public class Task implements Callable<Void> {
         }
     }
 
-    public ArrayList<MethodAST> executeBashCommand(String file) {
+    public ArrayList<MethodAST> executeBashCommand(String file, int timeout) {
         ArrayList<MethodAST> filesMethods = new ArrayList<>();
 
         Runtime r = Runtime.getRuntime();
@@ -49,7 +54,7 @@ public class Task implements Callable<Void> {
         try {
             Process p = r.exec(commands);
 
-            if (!p.waitFor(100, TimeUnit.SECONDS)) {
+            if (!p.waitFor(timeout, TimeUnit.SECONDS)) {
                 return null;
             }
 
@@ -71,15 +76,25 @@ public class Task implements Callable<Void> {
     private void runMethod() {
         try {
             ArrayList<MethodDeclaration> nodes = FileParser.extractFeatures(code);
-            ArrayList<MethodAST> c2v_methods = executeBashCommand(path.toString());
-            if (c2v_methods == null) {
+            ArrayList<MethodAST> c2v_methods = executeBashCommand(path.toString(), 100);
+            if(c2v_methods == null) {
                 System.out.println(path + ": Timed Out");
-                for (MethodDeclaration m : nodes)
+                for (MethodDeclaration m : nodes){
                     HeMa.predictionManager.predict(m, path, new MethodAST("Timed Out", -2));
-            } else if (c2v_methods.size() != nodes.size()) {
+                }
+            }else if (c2v_methods.size() != nodes.size()) {
                 System.out.println(path + ": Not Equal");
-                for (MethodDeclaration m : nodes)
-                    HeMa.predictionManager.predict(m, path, new MethodAST("No Match", -1));
+                if(c2v_methods.size() > nodes.size()){
+                    for (MethodAST m : c2v_methods){
+                        TokenizedName reference = TokenizedName.fromTokenised(m.name);
+                        Score score = UpdatedScore.updateScore(reference, null);
+                        Recorder.save(m.name, "-", "-", score, path, m);
+                    }
+                }else{
+                    for (MethodDeclaration m : nodes){
+                        HeMa.predictionManager.predict(m, path, new MethodAST("No Match", -1));
+                    }
+                }
             } else {
                 for (int i = 0; i < nodes.size(); i++) {
                     HeMa.predictionManager.predict(nodes.get(i), path, c2v_methods.get(i));
